@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>大发物流管理系统</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
+	<link rel="stylesheet" th:href="@{/css/css.css}" />
+	<script type="text/javascript" th:src="@{/js/jquery1.9.0.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/sdmenu.js}"></script>
+	<script type="text/javascript" th:src="@{/js/laydate/laydate.js}"></script>
+
+</head>
+
+<body>
+	<div class="header">
+		 <div class="logo"><img  th:src="@{/img/logo.png}" /></div>
+	     
+					<div class="header-right">
+						<i class="icon-off icon-white"></i> <a id="modal-973558" href="#modal-container-973558" role="button" data-toggle="modal">注销</a>
+						<div id="modal-container-973558" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:300px; margin-left:-150px; top:30%">
+					<div class="modal-header">
+						 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h3 id="myModalLabel">
+							注销系统
+						</h3>
+					</div>
+					<div class="modal-body">
+						<p>
+							您确定要注销退出系统吗？
+						</p>
+					</div>
+					<div class="modal-footer">
+						 <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <a class="btn btn-primary" style="line-height:20px;" th:href="@{/tologout}"  >确定退出</a>
+					</div>
+				</div>
+					</div>
+	</div>
+	<!-- 顶部 -->     
+     <!--内容页-->
+	<div id="middle">
+		<!--left content-->
+	     <div class="left">
+	     	 <!--菜单栏脚本-->
+		     <script type="text/javascript">
+				var myMenu;
+				window.onload = function() {
+					myMenu = new SDMenu("my_menu");
+					myMenu.init();
+				};
+			</script>
+	
+			<!--菜单栏-->
+		    <div id="my_menu" class="sdmenu">
+				<div >
+					<span>业务处理</span>
+					<a  th:href="@{/openticket}">电脑开票</a>
+					<a  th:href="@{/detail}">入库明细</a>
+
+					<a th:href="@{/historydetail}">历史清单</a>
+					<a th:href="@{/historyticket}">历史开票</a>
+				</div>    
+		    </div>
+	
+	     </div>
+	     <div class="Switch"></div>
+	     <script type="text/javascript">
+			$(document).ready(function(e) {
+		    $(".Switch").click(function(){
+			$(".left").toggle();
+			 
+				});
+				});
+		 </script>
+	
+	     <div class="right"  id="mainFrame">
+	     
+		     <div class="right_cont">
+				<ul class="breadcrumb">当前位置：
+				  <a href="#">首页</a> <span class="divider">/</span>
+				  <a href="#">业务处理</a> <span class="divider">/</span>
+				  电脑开票
+				</ul>
+			   <div class="title_right">
+			   		<strong>大发物流开票页</strong>
+			   </div>  
+			   <div style="width:900px; margin:auto">
+			   	<!--startprint1-->
+				   <form id="ticketForm"  th:action="@{/detail/saveticket}" method="post">
+				       <table   class="table_print table table-bordered table_height" cellpadding="0" cellspacing="0">
+				       	     <tr>
+				       	     	<td colspan="13"  style="text-align: center;">
+				       	     		<h3>聊  城  市  大  发  物  流  有  限  公  司  专  用  票  据  </h3>
+				       	     		<div>
+				       	     			<div class="t_left">
+				       	     				托运日期：
+											<input type="text"  class="laydate-icon span1-1" name="dateValue" id="Calendar" th:value="${ticket.dateValue}" />
+				       	     			</div>
+				       	     			<div class="t_right">
+				       	     				货单号：<input type="text" class="span1-1" th:value="${ticket.goodId}" name="goodId"/>
+				       	     			</div>
+				       	     		</div>
+				       	     	</td>
+				       	      </tr> 	
+					         <tr>
+							     <td width="80px" bgcolor="#f1f1f1">发货人：</td>
+							     <td colspan="3"><input type="text"class="text" th:value="${ticket.fromName}"  name="fromName"/></td>
+							     <td bgcolor="#f1f1f1" width="80px">发货地址：</td>
+							     <td colspan="2" width="100px" >
+								     	
+								     	<input type="text" class="text" th:value="${ticket.fromPlace}" name="fromPlace" id="from_val" />
+								     
+						
+							     </td>
+							     <td colspan="2" bgcolor="#f1f1f1">发货人电话：</td>
+							     <td colspan="2"><input type="text" class="text" th:value="${ticket.fromPhone}" name="fromPhone"/></td>
+					     	 </tr>
+					     	 <tr>
+							     <td bgcolor="#f1f1f1">收货人：</td>
+							     <td colspan="3"><input class="text" th:value="${ticket.toName}" name="toName"/></td>
+							     <td bgcolor="#f1f1f1">收货地址：</td>
+							     <td colspan="2">
+							     			<input type="text" class="text" th:value="${ticket.toPlace}" name="toPlace" id="to_val"  />
+							     		
+							     </td>
+							     <td colspan="2" bgcolor="#f1f1f1">收货人电话：</td>
+							     <td colspan="2"><input type="text" class="text" th:value="${ticket.toPhone}" name="toPhone" /></td>
+					     	  </tr>
+					     	 <tr>
+							     <td width="80px" bgcolor="#f1f1f1">货物名称：</td>
+							     <td colspan="2">
+							     	
+							     		<input type="text" class="text" th:value="${ticket.goodsName}" id="good_val" name="goodsName"/>
+							     
+							     </td>
+							     
+							     <td bgcolor="#f1f1f1" width="60px"><span id="unit_val">件</span>数
+							     	：</td>
+							     
+							     <td>
+							     	
+							     	 <!--
+							     	    注意事项立着写
+							     	    
+							     	 	
+							     	 -->	
+							     		<input type="number" class="text" th:value="${ticket.goodsCount}"  id="count" name="goodsCount" />
+							     	 
+							     </td>
+							     <td bgcolor="#f1f1f1" width="70px">立方数</td>
+							     <td width="80px">
+							     	<input type="number" class="text" id="cube" name="goodsCube" th:value="${ticket.goodsCube}" />
+							     </td>
+							     <td bgcolor="#f1f1f1" width="80px">重量（吨）：</td>
+							     <td width="80px"><input type="number" class="text" th:value="${ticket.goodsWeight}"  name="goodsWeight"/></td>
+					     	 	<td bgcolor="#f1f1f1" width="90px">单价（元）：</td>
+					     	 	<td><input type="number" class="text"  id="per" th:value="${ticket.goodsUnitprice}" name="goodsUnitprice"/></td>
+					     	 </tr>
+					     	 <tr>
+							     <td bgcolor="#f1f1f1">送货方式：</td>
+							     <td colspan="2">
+
+									 	<input th:if="${ticket.sendType==1}" checked="checked" type="radio" name="sendType" th:value="1"/>
+							     		<input th:if="${ticket.sendType==2}" type="radio" name="sendType" th:value="1"   />
+								       		送货&nbsp;&nbsp;&nbsp;&nbsp;
+									     <input th:if="${ticket.sendType==2}" checked="checked" type="radio" name="sendType" th:value="2"/>
+								         <input th:if="${ticket.sendType==1}" type="radio" name="sendType" th:value="2" />
+								         自提&nbsp;&nbsp;&nbsp;&nbsp;
+							     </td>
+							     <td bgcolor="#f1f1f1">
+							     	签回单
+							     </td>
+							     <td>
+									<input type="hidden" value="0" name="writeBack"/>
+									 <input th:if="${ticket.writeBack==1}" type="checkbox" checked="checked" id="writeBack" onclick="writeBackChange()" />
+
+							     	<input th:if="${ticket.writeBack==0}" type="checkbox"  id="writeBack" onclick="writeBackChange()"/>
+								       是 
+							     </td>
+							     <td bgcolor="#f1f1f1">运费支付：</td>
+							     <td  colspan="3" width="200px">
+									 <input th:if="${ticket.payType==1}" type="radio"  name="payType" value="1" checked="checked"/>
+							     	<input th:if="${ticket.payType!=1}" type="radio"  name="payType" value="1"/>
+								       已付&nbsp;&nbsp;&nbsp;&nbsp;
+									 <input th:if="${ticket.payType==2}" type="radio"  name="payType" value="2" checked="checked"/>
+								         <input th:if="${ticket.payType!=2}" type="radio" name="payType"  th:value="2"/>
+								         提付&nbsp;&nbsp;&nbsp;&nbsp;
+									 <input th:if="${ticket.payType==3}" type="radio"  name="payType" value="3" checked="checked"/>
+								         <input th:if="${ticket.payType!=3}" type="radio" name="payType" value="3" />
+								         回付
+							     </td>
+							     
+							     
+							     <td bgcolor="#f1f1f1" width="120px">运费总金额（元）：</td>
+							     <td><input type="text" class="text"  th:value="${ticket.payCount}" id="moneyResult" name="payCount"/>
+					     	 </tr>	
+					     	 <tr>
+							     <td bgcolor="#f1f1f1">代收货款：</td>
+							     <td  colspan="10">
+							     	<div class="m_left">
+							     		（大写）：<span id="m4"></span>万
+							     		<span id="m3"> </span>仟
+							     		<span id="m2"> </span>佰
+							     		<span id="m1"> </span>拾
+							     		<span id="m0"> </span>元
+							     	</div>
+							     	<div class="m_right">
+							     		(小写):
+							     		<input type="text" id="money_input" th:value="${ticket.collection}"   name="collection"/>元
+							     	</div>
+							     </td>
+					     	 </tr>	
+					     	 <tr>
+							     <td bgcolor="#f1f1f1">提货人：</td>
+							     <td colspan="2">
+							     	<input type="text" class="text" th:value="${ticket.consignee}" name="consignee"/>
+							     </td>
+							     <td  bgcolor="#f1f1f1" colspan="3">提货人证件号码</td>
+							     <td colspan="5">
+							     	<input type="text" class="text" th:value="${ticket.consigneePhone}" name="consigneePhone" />
+							     </td>
+					     	 </tr>	
+				       		 <tr>
+				       		 	<td colspan="11">
+				       		 		<div class="warn_bt">
+				       		 			注<br>意<br>事<br>项
+				       		 		</div>
+				       		 		<div class="warn_con">
+				       		 			1本货运单等同运输合同，具有法律效力。2货物包装应符合行业标准；
+				       		 			否则造成损失由托运人自负，易碎易损物品发生损坏；由发货人自负。
+				       		 			3货物外包装完好 ，内部出现问题由发货人自负。
+				       		 			4货物保价按5%收取保价费，货物丢失，损坏按保价赔偿，
+				       		 			货物如不按保价，发生损坏，丢失按货物运费的2，5倍赔偿。
+				       		 			5自提货物逾期一个月不取，按无主处理。6收货人收货签字后本 自然终止。
+				       		 			此单存查期为30天，过期作废。
+				       		 		</div>
+				       		 	</td>
+				       		 </tr>
+
+				       </table>
+				      	<div>
+		       	     			<div class="end_left">
+		       	     				查询电话：13376358637
+		       	     			</div>
+		       	     			<div class="end_right">
+		       	     				制单人：
+		       	     			</div>
+				       	</div>
+			   <!--endprint1-->
+				   </form>
+			   </div>
+		     
+		     			    <div id="modal-from" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+										<div class="modal-header">
+											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												发货地址
+											</h3>
+										</div>
+										<div>
+											<div class="mis_head">
+												山东省聊城市
+											</div>
+											
+											<div class="mis_con">
+												<label><input type="radio" onchange="addFromPlace(0)" name="check">聊城市</label>
+												<label><input type="radio" onchange="addFromPlace(1)" name="check">东昌府</label>
+	       										<label><input type="radio" onchange="addFromPlace(2)" name="check">临清</label>
+												<label><input type="radio" onchange="addFromPlace(3)" name="check">高唐</label>
+	       										<label><input type="radio" onchange="addFromPlace(4)" name="check">冠县</label>
+	       										<label><input type="radio" onchange="addFromPlace(5)" name="check">阳谷</label>
+	       										<label><input type="radio" onchange="addFromPlace(6)" name="check">荏平</label>
+	       										<label><input type="radio" onchange="addFromPlace(7)" name="check">莘县</label>
+	       										<label><input type="radio" onchange="addFromPlace(8)" name="check">东阿</label>
+											</div>
+										
+										</div>
+										
+										<div class="modal-footer">
+											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="sureFromSave()" style="width:80px">保存</button> 
+						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
+										</div>
+							</div>
+		     			    <div id="modal-to" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+										<div class="modal-header">
+											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												发货地址
+											</h3>
+										</div>
+										<div>
+											<div class="mis_head">									
+												<label><input type="radio" onclick="showToPlace2(0)" onchange="addToPlace(0,null,null,1)" name="to1">黑龙江省</label>
+												<label><input type="radio" onclick="showToPlace2(1)" onchange="addToPlace(1,null,null,1)" name="to1">吉林省</label>
+	       										<label><input type="radio" onclick="showToPlace2(2)" onchange="addToPlace(2,null,null,1)" name="to1">辽宁省</label>
+											</div>
+											<div class="mis_con" id="to2" style="display: none;">		
+											</div>	
+											<div class="mis_con" id="to3" style="display: none;">
+												
+											</div>
+										</div>
+										
+										<div class="modal-footer">
+											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="sureToSave()" style="width:80px">保存</button> 
+						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
+										</div>
+							</div>	
+		     			    <div id="modal-good" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+										<div class="modal-header">
+											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												货物名称
+											</h3>
+										</div>
+										<div>
+											
+											<div class="mis_con" id="goodCon">		
+												
+											</div>	
+										
+										</div>
+										
+										<div class="modal-footer">
+											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="addGoods()" style="width:80px">保存</button> 
+						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
+										</div>
+							</div>
+							
+							<div id="modal-unit" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+										<div class="modal-header">
+											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												货物单位
+											</h3>
+										</div>
+										<div>
+											
+											<div class="mis_con" id="unitCon">		
+												
+											</div>	
+										
+										</div>
+										
+										<div class="modal-footer">
+											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="changeUnit()" style="width:80px">保存</button> 
+						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
+										</div>
+							</div>
+		     			    <!--<div id="modal-showType" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+										<div class="modal-header">
+											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												商品单位
+											</h3>
+										</div>
+										<div>
+											
+											<div class="mis_con" id="goodCon">		
+												
+											</div>	
+										
+										</div>
+										
+										<div class="modal-footer">
+											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="sureToSave()" style="width:80px">保存</button> 
+						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
+										</div>
+							</div>	-->
+		     </div>     
+	     </div>
+	</div>
+	    
+<!-- 底部 -->
+	<div id="footer">
+                版权所有：大发客流 &copy; 2015&nbsp;&nbsp;&nbsp;&nbsp;<
+		
+	</div>
+	    
+    
+
+ 
+	<script>
+	$(function () {
+		$("input").attr("disabled","disabled");
+    });
+	function writeBackChange(){
+        if ($("#writeBack").attr('checked')) {
+            $("input[name='writeBack']").val(1);
+		}else{
+            $("input[name='writeBack']").val(0);
+		}
+	}
+
+	function checkVal(value){
+		if (value==null || value ==undefined ||value.trim() == ""){
+
+			return false;
+		}
+		return true;
+	}
+
+	function preview(tag)
+	{
+        var value1=$('input:radio[name="sendType"]:checked').val();
+
+	    var value2=$('input:radio[name="payType"]:checked').val();
+
+	    if (checkVal(value1) &&  checkVal(value2)) {
+            $("#tag").val(tag);
+            $("#ticketForm").submit();
+        }else{
+	        alert("请选择送货(支付)方式");
+		}
+	}
+			
+		
+	!function(){
+	laydate.skin('molv');
+	laydate({elem: '#Calendar'});
+	}();
+	 
+	</script>
+	
+	<script th:src="@{/js/content.js}"></script>
+
+ 
+</body>
+</html>

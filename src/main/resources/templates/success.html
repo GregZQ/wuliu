@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>大发物流管理系统</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
+    <link rel="stylesheet" th:href="@{/css/css.css}" />
+    <script type="text/javascript" th:src="@{/js/jquery1.9.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/sdmenu.js}"></script>
+    <script type="text/javascript" th:src="@{/js/laydate/laydate.js}"></script>
+
+</head>
+
+<body>
+<div class="header">
+    <div class="logo"><img  th:src="@{img/logo.png}" /></div>
+
+    <div class="header-right">
+        <i class="icon-off icon-white"></i> <a id="modal-973558" href="#modal-container-973558" role="button" data-toggle="modal">注销</a>
+        <div id="modal-container-973558" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:300px; margin-left:-150px; top:30%">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">
+                    注销系统
+                </h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                    您确定要注销退出系统吗？
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <a class="btn btn-primary" style="line-height:20px;" th:href="@{/tologout}" >确定退出</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 顶部 -->
+<!--内容页-->
+<div id="middle">
+    <!--left content-->
+    <div class="left">
+        <!--菜单栏脚本-->
+        <script type="text/javascript">
+            var myMenu;
+            window.onload = function() {
+                myMenu = new SDMenu("my_menu");
+                myMenu.init();
+            };
+        </script>
+
+        <!--菜单栏-->
+        <div id="my_menu" class="sdmenu">
+            <div >
+                <span>业务处理</span>
+                <a  th:href="@{/openticket}">电脑开票</a>
+                <a  th:href="@{/detail}">入库明细</a>
+
+                <a th:href="@{/historydetail}">历史清单</a>
+                <a th:href="@{/historyticket}">历史开票</a>
+            </div>
+        </div>
+
+    </div>
+    <div class="Switch"></div>
+    <script type="text/javascript">
+        $(document).ready(function(e) {
+            $(".Switch").click(function(){
+                $(".left").toggle();
+
+            });
+        });
+    </script>
+
+    <div class="right"  id="mainFrame">
+
+        <div class="right_cont">
+            <ul class="breadcrumb">当前位置：
+                <a href="#">首页</a> <span class="divider">/</span>
+                <a href="#">业务处理</a> <span class="divider">/</span>
+                电脑开票
+            </ul>
+            <div class="title_right">
+                <strong>成功</strong>
+            </div>
+
+            <div>
+                <h3>打印中，请稍后。。。。。。，</h3>
+                <a th:href="@{/senddetails/{sid}(sid=${sid})}">点此返回运输清单</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 底部 -->
+<div id="footer">
+    版权所有：大发客流 &copy; 2015&nbsp;&nbsp;&nbsp;&nbsp;<
+
+</div>
+
+
+
+
+<script>
+
+    $(function () {
+        writeBackChange();
+    })
+    function writeBackChange(){
+        if ($("#writeBack").attr('checked')) {
+            $("input[name='writeBack']").val(1);
+        }else{
+            $("input[name='writeBack']").val(0);
+        }
+    }
+
+    function checkVal(value){
+        if (value==null || value ==undefined ||value.trim() == ""){
+
+            return false;
+        }
+        return true;
+    }
+
+    function preview(tag)
+    {
+        var value1=$('input:radio[name="sendType"]:checked').val();
+
+        var value2=$('input:radio[name="payType"]:checked').val();
+
+        if (checkVal(value1) &&  checkVal(value2)) {
+            $("#tag").val(tag);
+            $("#ticketForm").submit();
+        }else{
+            alert("请选择送货(支付)方式");
+        }
+    }
+
+
+    !function(){
+        laydate.skin('molv');
+        laydate({elem: '#Calendar'});
+    }();
+
+</script>
+
+<script src="js/content.js"></script>
+
+
+</body>
+</html>
