@@ -1,6 +1,5 @@
 package com.df.dao;
 
-import com.df.domain.Detail;
 import com.df.domain.SendList;
 import org.apache.ibatis.annotations.*;
 
@@ -10,6 +9,7 @@ import java.util.List;
 public interface SendDao {
     /**
      * 创建一个新的Send
+     *
      * @return
      */
     @Insert("insert into t_list(carid)values(null)")

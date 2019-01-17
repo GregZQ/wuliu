@@ -4,7 +4,6 @@ package com.df.dao;
 import com.df.domain.Detail;
 import com.df.domain.Ticket;
 import org.apache.ibatis.annotations.*;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Date;
 import java.util.List;
@@ -38,7 +37,7 @@ public interface DetailDao {
     Integer deleteDetailById(@Param("id") Integer id);
 
     @Update("update t_invoice set sid=#{sid},sendtime=#{date} where id=#{id}")
-    void updateDateSidById(@Param("id") Integer id, @Param("sid") Integer sid, @Param("date")Date date);
+    void updateDateSidById(@Param("id") Integer id, @Param("sid") Integer sid, @Param("date") Date date);
 
     /*到这了*/
     @Update("update t_invoice set sendTime=null,sid=null where sid in (" +
@@ -57,10 +56,10 @@ public interface DetailDao {
     void deleteDetailBySid(@Param("sid") Integer sid);
 
     @Select("<script> select count(*) from t_invoice where 1=1 <when test='loadTime!=null'> and time=#{loadTime}</when> <when test='goodid!=null'> and goods_id  like '%${goodid}%'</when> </script>")
-    int getCountByLoadTimeAndGoodid(@Param("loadTime") String loadTime,@Param("goodid") String goodid);
+    int getCountByLoadTimeAndGoodid(@Param("loadTime") String loadTime, @Param("goodid") String goodid);
 
     @Select("<script> select time as date,id,goods_id as goodId from t_invoice where 1=1 <when test='loadTime!=null'> and time=#{loadTime} </when> <when test='goodid!=null'> and goods_id like '%${goodid}%' </when> order by id desc limit #{start},#{nums}  </script>")
-    List<Detail> findDetailByLoadTimeAndGoodidAndPage(@Param("loadTime") String loadTime,@Param("goodid") String goodid,
+    List<Detail> findDetailByLoadTimeAndGoodidAndPage(@Param("loadTime") String loadTime, @Param("goodid") String goodid,
                                                       @Param("start") int start, @Param("nums") Integer nums);
 
     @Select("select id,sendtime as sendTime,time as date,goods_id as goodId,from_name as fromName,from_place as fromPlace,from_phone as fromPhone," +
