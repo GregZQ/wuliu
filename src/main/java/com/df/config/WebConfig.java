@@ -23,12 +23,21 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addViewController("/login").setViewName("login");
 
+        registry.addViewController("/register").setViewName("register");
+
         registry.addViewController("/detail").setViewName("detail");
+
+        registry.addViewController("/success_register").setViewName("success_register");
 
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor()).excludePathPatterns(new String[]{"/login","/tologin"});
+        registry.addInterceptor(new LoginInterceptor())
+                .excludePathPatterns(new String[]{
+                        "/login","/tologin","/register","/toregister",
+                        "/img/**","/js/**","/css/**",
+                        "/error","/success_register"
+                });
     }
 }
