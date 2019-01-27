@@ -51,14 +51,21 @@
 	</script>
 
 		<div id="my_menu" class="sdmenu">
-				<div >
-					<span>业务处理</span>
-					<a  th:href="@{/openticket}">电脑开票</a>
-					<a  th:href="@{/detail}">入库明细</a>
-
-					<a th:href="@{/historydetail}">历史清单</a>
-					<a th:href="@{/historyticket}">历史开票</a>
-				</div>    
+			<div >
+				<span>货物管理</span>
+				<a  th:href="@{/openticket}">电脑开票</a>
+				<a  th:href="@{/detail}">入库明细/管理</a>
+			</div>
+			<div>
+				<span>历史信息</span>
+				<a th:href="@{/historyticket}">历史开票</a>
+				<a th:href="@{/historydetail}">历史运输清单</a>
+			</div>
+			<div>
+				<span>票据导出</span>
+				<a th:href="@{/printticket}">开票数据导出</a>
+				<a th:href="@{/printdetail}">运输清单导出</a>
+			</div>
 	     </div>
 
      </div>
@@ -77,7 +84,7 @@
      <div class="right_cont">
 		 <ul class="breadcrumb">当前位置：
 		  <a href="#">首页</a> <span class="divider">/</span>
-		  <a href="#">业务处理</a> <span class="divider">/</span>
+		  <a href="#">详细内容</a> <span class="divider">/</span>
 		  运输清单
 		</ul>
       
@@ -85,14 +92,6 @@
 			<span class="pull-right margin-bottom-5">
 				<a  class="btn btn-info btn-small"  id="modal1" href="#modal-line" role="button" data-toggle="modal">
 					<i class="icon-plus icon-white"></i> 选择线路</a>
-			</span>
-			   <span class="pull-right margin-bottom-5">
-				<a  class="btn btn-info btn-small"  id="modal2" href="#modal-place" role="button" data-toggle="modal">
-					<i class="icon-plus icon-white"></i> 选择卸货地址</a>
-			</span>
-			   <span class="pull-right margin-bottom-5">
-				<a  class="btn btn-info btn-small"  id="modal3" href="#modal-phone" role="button" data-toggle="modal">
-					<i class="icon-plus icon-white"></i> 选择联系人电话</a>
 			</span>
    	<strong>运输清单</strong>
    </div>
@@ -119,63 +118,23 @@
 				 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button>
 			 </div>
 		 </div>
-
-		 <div id="modal-place" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
-			 <div class="modal-header">
-				 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				 <h3 id="myModalLabel">
-					 卸货地址
-				 </h3>
-			 </div>
-			 <div>
-				 <td>
-					 <label><input type="radio" onchange="changePutPlace('黑龙江收获站')" name="check">黑龙江收获站</label>
-					 <label><input type="radio" onchange="changePutPlace('哈尔滨收获站')" name="check">哈尔滨收获站</label>
-					 <label><input type="radio" onchange="changePutPlace('长春收获站')" name="check">长春收获站</label>
-				 </td>
-			 </div>
-			 <div class="modal-footer">
-				 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">保存</button>
-				 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button>
-			 </div>
-		 </div>
-
-		 <div id="modal-phone" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
-			 <div class="modal-header">
-				 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				 <h3 id="myModalLabel">
-					 联系人电话
-				 </h3>
-			 </div>
-			 <div>
-				 <td>
-					 <label><input type="radio" onchange="changeLinkPhone(13563834593)" name="check">13563834593</label>
-					 <label><input type="radio" onchange="changeLinkPhone(15254868209)" name="check">15254868209</label>
-					 <label><input type="radio" onchange="changeLinkPhone(17865815296)" name="check">17865815296</label>
-				 </td>
-			 </div>
-			 <div class="modal-footer">
-				 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">保存</button>
-				 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button>
-			 </div>
-		 </div>
   <form id="myForm" th:action="@{/senddetails/finish}" method="post">
 	   <table class="table table-bordered table-striped table-hover">
 		 <tbody>
 			<tr align="center">
 				<td colspan="20">
-					<h3>聊  城  市  大  发  物  流  有  限  公  司
+					<h3><span th:text="${company}"></span>出货票据
 					</h3>
 					<h5>
-						聊城----<span id="to" th:text="${sendList.place}"></span>货物运输清单
+						聊城----<span id="to" th:text="${sends.place}"></span>货物运输清单
 					</h5>
 					<div class="t_left">
-						承运车号：<input type="text" class="span1-1" id="carid" name="carid" th:value="${sendList.carid}"/>
+						承运车号：<input type="text" class="span1-1" id="carid" name="carid" th:value="${sends.carid}"/>
 					</div>
 					<div class="t_right">
 						装车日期：
 						<input type="text" class="laydate-icon span1-1"
-							   name="loadTimeValue" th:value="${sendList.loadTimeValue}"
+							   name="loadTimeValue" th:value="${sends.loadTimeValue}"
 							   id="Calendar"/>
 					</div>
 					<div>
@@ -207,86 +166,55 @@
 
 			 </tr>
 
-		   <tr align="center" th:each="sendList,iterStat:${list}">
-			 <td nowrap="nowrap" name="id" th:value="${iterStat.index+1}">1</td>
-			 <td nowrap="nowrap" th:text="${sendList.goodId}">00008</td>
-				<input  type="hidden" name="goodId" th:value="${sendList.goodId}"/>
-			 <td nowrap="nowrap" th:text="${sendList.goodsName}">箱子</td>
-			 	<input type="hidden" name="goodsName" th:value="${sendList.goodsName}"/>
-			 <td nowrap="nowrap" th:text="${sendList.goodsCount}">1200</td>
-				<input  type="hidden" name="goodsCount" th:value="${sendList.goodsCount}"/>
-			 <td nowrap="nowrap" th:text="${sendList.goodsWeight}">22</td>
-			 	<input type="hidden" name="goodsWeight" th:value="${sendList.goodsWeight}"/>
-			 <td nowrap="nowrap" th:text="${sendList.goodsCube}">2000</td>
-			    <input type="hidden" name="goodsCube" th:value="${sendList.goodsCube}" />
-			 <td nowrap="nowrap" th:text="${sendList.payType == 1 ?'是':''}">5000</td>
-			 <td nowrap="nowrap" th:text="${sendList.payType == 2 ?'是':''}"></td>
-			 <td nowrap="nowrap" th:text="${sendList.payType == 3 ?'是':''}">2000</td>
-			 	<input type="hidden" name="payType" th:value="${sendList.payType}"/>
-			 <td nowrap="nowrap"  th:text="${sendList.payType == 2 ? sendList.payCount :''}"></td>
-			 	<input type="hidden" name="payCount" th:value="${sendList.payCount}"/>
-			 <td nowrap="nowrap"  th:text="${sendList.sendType == 1 ? '是' : ''}"></td>
-			 <td th:text="${sendList.sendType == 2 ? '是':''}">是</td>
-			 	<input type="hidden" name="sendType" th:value="${sendList.sendType}"/>
-			 <td th:text="${sendList.writeBack ==1 ?'是':''}"></td>
-			 	<input  type="hidden" name="writeBack" th:value="${sendList.writeBack}"/>
-			 <td th:text="${sendList.collection}"></td>
-				<input type="hidden" name="collection" th:value="${sendList.collection}" />
-			 <td  th:text="${sendList.toName}">张三</td>
-			   <input type="hidden" name="toName" th:value="${sendList.toName}" />
-			 <td  th:text="${sendList.toPlace}">黑龙江哈尔滨</td>
-			   <input type="hidden" name="toPlace" th:value="${sendList.toPlace}"/>
-			 <td  th:text="${sendList.toPhone}">12345678901</td>
-			   <input type="hidden" name="toPhone" th:value="${sendList.toPhone}"/>
-			 <td  th:text="${sendList.sendTimeValue}">
-				 2012-12-12
-			 </td>
-			   <input type="hidden" name="sendTimeValue" th:value="${sendList.sendTimeValue}"/>
-			 <td nowrap="nowrap"></td>
-			 <td nowrap="nowrap"></td>
-			 </tr>
-
-			 <tr>
-				 <td colspan="2">货单张数</td>
-				 <td colspan="1" th:text="${sendList.totalPages}"></td>
-				 <td colspan="3">代收运费</td>
-				 <td colspan="3"  th:text="${sendList.moneysMe}">22</td>
-				 <td colspan="3">代收货款</td>
-				 <td colspan="2" th:text="${sendList.moneysHe}"></td>
-				 <td rowspan="3">备注</td>
-				 <td rowspan="3" colspan="5">
+		   <tr align="center" th:each="sends,iterStat:${list}">
+				 <td nowrap="nowrap" name="id" th:value="${iterStat.index+1}">1</td>
+				 <td nowrap="nowrap" th:text="${sends.goodId}">00008</td>
+					<input  type="hidden" name="goodId" th:value="${sends.goodId}"/>
+				 <td nowrap="nowrap" th:text="${sends.goodsName}">箱子</td>
+					<input type="hidden" name="goodsName" th:value="${sends.goodsName}"/>
+				 <td nowrap="nowrap" th:text="${sends.goodsCount}">1200</td>
+					<input  type="hidden" name="goodsCount" th:value="${sends.goodsCount}"/>
+				 <td nowrap="nowrap" th:text="${sends.goodsWeight}">22</td>
+					<input type="hidden" name="goodsWeight" th:value="${sends.goodsWeight}"/>
+				 <td nowrap="nowrap" th:text="${sends.goodsCube}">2000</td>
+					<input type="hidden" name="goodsCube" th:value="${sends.goodsCube}" />
+				 <td nowrap="nowrap" th:text="${sends.payType == 1 ?'是':''}">5000</td>
+				 <td nowrap="nowrap" th:text="${sends.payType == 2 ?'是':''}"></td>
+				 <td nowrap="nowrap" th:text="${sends.payType == 3 ?'是':''}">2000</td>
+					<input type="hidden" name="payType" th:value="${sends.payType}"/>
+				 <td nowrap="nowrap"  th:text="${sends.payType == 2 ? sends.payCount :''}"></td>
+					<input type="hidden" name="payCount" th:value="${sends.payCount}"/>
+				 <td nowrap="nowrap"  th:text="${sends.sendType == 1 ? '是' : ''}"></td>
+				 <td th:text="${sends.sendType == 2 ? '是':''}">是</td>
+					<input type="hidden" name="sendType" th:value="${sends.sendType}"/>
+				 <td th:text="${sends.writeBack ==1 ?'是':''}"></td>
+					<input  type="hidden" name="writeBack" th:value="${sends.writeBack}"/>
+				 <td th:text="${sends.collection}"></td>
+					<input type="hidden" name="collection" th:value="${sends.collection}" />
+				 <td  th:text="${sends.toName}">张三</td>
+				   <input type="hidden" name="toName" th:value="${sends.toName}" />
+				 <td  th:text="${sends.toPlace}">黑龙江哈尔滨</td>
+				   <input type="hidden" name="toPlace" th:value="${sends.toPlace}"/>
+				 <td  th:text="${sends.toPhone}">12345678901</td>
+				   <input type="hidden" name="toPhone" th:value="${sends.toPhone}"/>
+				 <td  th:text="${sends.sendTimeValue}">
+					 2012-12-12
 				 </td>
-				 <input type="hidden" name="totalPages" th:value="${sendList.totalPages}">
-				 <input type="hidden" name="moneysMe" th:value="${sendList.moneysMe}"/>
-				 <input type="hidden" name="moneysHe" th:value="${sendList.moneysHe}"/>
+				   <input type="hidden" name="sendTimeValue" th:value="${sends.sendTimeValue}"/>
+				 <td nowrap="nowrap"></td>
+				 <td nowrap="nowrap"></td>
 			 </tr>
-			 <tr>
-				<td colspan="2">驾驶人签字</td>
-				<td></td>
-				<td colspan="2">证件号码</td>
-				<td colspan="4"></td>
-				<td>随车电话</td>
-				<td colspan="4"></td>
-			 </tr>
-			 <tr>
-				<td colspan="2">卸货地址</td>
-				<td id="putPlace" th:text="${sendList.putPlace}">黑龙江哈尔滨</td>
-				<td colspan="2">联系电话</td>
-				<td colspan="4" id="linkPhone" th:text="${sendList.linkPhone}">
-				</td>
-				<td>制单人</td>
-				<td colspan="4"></td>
-				 <input type="hidden" name="sid" th:value="${sendList.sid}"/>
-				 <input type="hidden" name="putPlace" th:value="${sendList.putPlace}"/>
-				 <input type="hidden" name="linkPhone" th:value="${sendList.linkPhone}"/>
-				 <input type="hidden" name="place" th:value="${sendList.place}"/>
-			 </tr>
+			<input type="hidden" name="sid" th:value="${sends.sid}"/>
+			<input type="hidden" name="place" th:value="${sends.place}"/>
 		 </tbody>
 	   </table>
 	   <table  class="margin-bottom-20 table  no-border" >
 			<tr>
-			<td class="text-center"><input type="button" value="打印并保存" onclick="checkMsg()"  class="btn btn-info" style="width:80px;" /></td>
-		 </tr>
+				<td class="text-center">
+					<input th:if="${sends.savePath} == null" type="button" value="保存" onclick="checkMsg()"  class="btn btn-info" style="width:80px;" />
+					<input th:if="${sends.savePath} != null" type="button" value="打印" th:onclick="|download(${sends.sid})|" class="btn btn-info" style="width:80px;" />
+				</td>
+			</tr>
 		</table>
   </form>
    
@@ -315,23 +243,20 @@ laydate({elem: '#Calendar2'});
         $("input[name='place']").val(temp);
     }
 
-    function changePutPlace(temp){
-        $("#putPlace").html(temp);
-        $("input[name='putPlace']").val(temp);
-    }
-    function changeLinkPhone(temp){
-        $("#linkPhone").html(temp);
-        $("input[name='linkPhone']").val(temp);
-    }
-    
+    function download(id){
+        var a = document.createElement('a');
+        var url = "/download?id="+id+"&type="+2;
+        a.href=url;
+        a.click()
+	}
+
     function  checkMsg() {
 		var carid=$("#carid").val();
 
 		var place=$("#to").html();
 
 		var calendar=$("#Calendar").val();
-        var putPlace=$("#putPlace").html();
-        var linkPhone=$("#linkPhone").html();
+
 		if (testNull(carid)){
 		    alert("承运车号不能为空");
 			return;
@@ -344,14 +269,7 @@ laydate({elem: '#Calendar2'});
 		    alert("装车日期不能为空");
 			return ;
 		}
-		if (testNull(putPlace)){
-		    alert("卸货地址不能为空");
-			return ;
-		}
-		if (testNull(linkPhone)){
-		    alert("联系方式不能为空");
-		    return ;
-		}
+
 		$("#myForm").submit();
     }
     function testNull(a){

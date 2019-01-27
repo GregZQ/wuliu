@@ -1,71 +1,67 @@
 package com.df.controller;
 
 
-import com.df.controller.utils.ExcelUtil;
-import com.df.controller.utils.PrintUtils;
+import com.df.controller.utils.CookitUtil;
+import com.df.domain.Detail;
 import com.df.domain.PageBean;
-import com.df.domain.Ticket;
-import com.df.service.DetailService;
-import com.df.service.SendService;
+import com.df.domain.User;
+import com.df.service.SendsService;
+import com.df.service.TicketService;
+import com.df.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
 public class DetailController {
 
     @Autowired
-    private DetailService detailService;
+    private TicketService ticketService;
 
     @Autowired
-    private SendService sendService;
+    private SendsService sendsService;
 
-    /**
-     * 保存订单，将订单转为一个detail
-     * @param ticket 需要保存的订单信息
-     * @param tag 是否打印
-     * @return
-     */
-    @PostMapping("/detail/saveticket")
-    public String saveTicket(Ticket ticket,Integer tag){
-
-        this.detailService.addTicket(ticket);
-        if (tag==1){
-            try {
-                PrintUtils.printOpenTicket(ticket,"Sheet2");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return "redirect:/detail";
-    }
+    @Autowired
+    private UserService userService;
     /*
      * 请求detail页
      * 因为涉及局部刷新，所以使用ajax+json异步请求方式请求数据
      */
     @GetMapping("/detail/list")
-
-    public @ResponseBody PageBean list(PageBean pageBean){
+    public @ResponseBody PageBean list(HttpServletRequest request,PageBean pageBean){
+        //刷新
         refresh();
-        pageBean=PageBean.checkPageBean(pageBean);
+        //获取当前登录用户
+        String username = CookitUtil.getUsername(request);
+        User user = this.userService.findUserByUsername(username);
 
+        //分页查询当前数据
+        pageBean=PageBean.checkPageBean(pageBean);
         Integer start=(pageBean.getCurrentPage()-1)*pageBean.getPer();
         Integer nums=pageBean.getPer();
-        List datas=this.detailService.listByTimeAndPage(start,nums);
-        Integer count=this.detailService.getAllCount();
+        List<Detail> datas=this.ticketService.findByPageAndUid(start,nums,user.getId());
+        Integer count=this.ticketService.getAllCountByUid(user.getId());
+        //更新分页数据
         pageBean=PageBean.finishPageBean(datas,count,pageBean);
 
         return pageBean;
     }
 
+    /**
+     * 刷新
+     */
     private void refresh() {
         /**
          * 因为可能选择后后悔，所以在不选择的情况下调用它
          */
-        this.detailService.refresh();
-        this.sendService.refresh();
+        this.ticketService.refresh();
+        this.sendsService.refresh();
     }
 
     /*
@@ -75,7 +71,7 @@ public class DetailController {
     @PostMapping("/detail/remove/{id}")
     @ResponseBody String deleteDetailById(@PathVariable Integer id){
 
-          Integer result=this.detailService.deleteDetailById(id);
+          Integer result=this.ticketService.deleteById(id);
           if (result==1){
               return "true";
           }

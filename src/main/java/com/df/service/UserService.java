@@ -25,4 +25,8 @@ public class UserService {
     public User findUserByUsername(String username) {
         return this.userDao.findUserByUsername(username);
     }
+
+    public void updatePath(User user) {
+        this.userDao.updatePath(user);
+    }
 }

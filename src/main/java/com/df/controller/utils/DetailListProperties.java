@@ -10,6 +10,10 @@ public class DetailListProperties {
 
     public static final String endPath="end.xlsx";
 
+    public static final Integer COMPANY = 0;
+
+    public static final Integer COMPANY_LINE = 0;
+
     public static final Integer COLUMN_LINE=16;
 
     public static final Integer NUM=0;

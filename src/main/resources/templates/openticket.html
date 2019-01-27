@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>大发物流管理系统</title>
+	<title>物流管理系统</title>
 	<link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
 	<link rel="stylesheet" th:href="@{/css/css.css}" />
 	<script type="text/javascript" th:src="@{/js/jquery1.9.0.min.js}"></script>
@@ -54,13 +54,20 @@
 			<!--菜单栏-->
 		    <div id="my_menu" class="sdmenu">
 				<div >
-					<span>业务处理</span>
+					<span>货物管理</span>
 					<a  th:href="@{/openticket}">电脑开票</a>
-					<a  th:href="@{/detail}">入库明细</a>
-
-					<a th:href="@{/historydetail}">历史清单</a>
+					<a  th:href="@{/detail}">入库明细/管理</a>
+				</div>
+				<div>
+					<span>历史信息</span>
 					<a th:href="@{/historyticket}">历史开票</a>
-				</div>    
+					<a th:href="@{/historydetail}">历史运输清单</a>
+				</div>
+				<div>
+					<span>票据导出</span>
+					<a th:href="@{/printticket}">开票数据导出</a>
+					<a th:href="@{/printdetail}">运输清单导出</a>
+				</div>
 		    </div>
 	
 	     </div>
@@ -79,11 +86,11 @@
 		     <div class="right_cont">
 				<ul class="breadcrumb">当前位置：
 				  <a href="#">首页</a> <span class="divider">/</span>
-				  <a href="#">业务处理</a> <span class="divider">/</span>
+				  <a href="#">货物管理</a> <span class="divider">/</span>
 				  电脑开票
 				</ul>
 			   <div class="title_right">
-			   		<strong>大发物流开票页</strong>
+			   		<strong>开票页</strong>
 			   	   	<span class="pull-right margin-bottom-5">
 				   		<a  class="btn btn-info btn-small" onclick="showUnit()"  href="#modal-unit" data-toggle="modal">
 				   			<i class="icon-plus icon-white"></i>选择单位</a>
@@ -104,10 +111,11 @@
 			   <div style="width:900px; margin:auto">
 			   	<!--startprint1-->
 				   <form id="ticketForm"  th:action="@{/detail/saveticket}" method="post">
-				       <table   class="table_print table table-bordered table_height" cellpadding="0" cellspacing="0">
+				       <input type="hidden" name="uid" th:value="${uid}"/>
+					   <table   class="table_print table table-bordered table_height" cellpadding="0" cellspacing="0">
 				       	     <tr>
 				       	     	<td colspan="13"  style="text-align: center;">
-				       	     		<h3>聊  城  市  大  发  物  流  有  限  公  司  专  用  票  据  </h3>
+				       	     		<h3><span th:text="${company}"></span>专用票据  </h3>
 				       	     		<div>
 				       	     			<div class="t_left">
 				       	     				托运日期：
@@ -260,10 +268,8 @@
 			   <!--endprint1-->
 			       <table  class="margin-bottom-20 table  no-border" >
 					        <tr>
-					     	<td class="text-center"><input type="button"  onclick="preview(0)" value="保存" class="btn btn-info " style="width:80px;" /></td>
-								<input type="hidden" id="tag" name="tag" value="0"/>
-					     	<td class="text-center"><input type="button" value="保存并打印"  onclick="preview(1)"  class="btn btn-info" style="width:80px;" /></td>
-					        </tr>
+					     	<td class="text-center"><input type="button"  onclick="preview()" value="保存" class="btn btn-info " style="width:80px;" /></td>
+							</tr>
 			 			</table>
 				   </form>
 			   </div>
@@ -391,7 +397,7 @@
 	    
 <!-- 底部 -->
 	<div id="footer">
-                版权所有：大发客流 &copy; 2015&nbsp;&nbsp;&nbsp;&nbsp;<
+
 		
 	</div>
 	    
@@ -419,15 +425,14 @@
 		return true;
 	}
 
-	function preview(tag)
+	function preview()
 	{
-	    alert(tag);
+
         var value1=$('input:radio[name="sendType"]:checked').val();
 
 	    var value2=$('input:radio[name="payType"]:checked').val();
 
 	    if (checkVal(value1) &&  checkVal(value2)) {
-            $("#tag").val(tag);
             $("#ticketForm").submit();
         }else{
 	        alert("请选择送货(支付)方式");

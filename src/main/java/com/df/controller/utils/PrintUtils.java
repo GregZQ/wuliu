@@ -1,174 +1,192 @@
 package com.df.controller.utils;
 
 import com.df.domain.Detail;
-import com.df.domain.SendList;
+import com.df.domain.Sends;
 import com.df.domain.Ticket;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.df.domain.User;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.springframework.util.FileCopyUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.FileInputStream;
-import java.net.URL;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
-import java.util.UUID;
 
 /**
+ * 定制化的文件excel文件导出
  * Created by Jone on 2018-04-08.
  */
 public class PrintUtils {
+    /**
+     * 生成专用票据
+     * @param srcFilePath 源文件路径
+     * @param filePath
+     * @param sheetName
+     * @param user
+     * @throws Exception
+     */
+    public static void generateTicketFile(String srcFilePath,String filePath,String sheetName,User user) throws Exception {
+        //复制ticket
+        String realTicketPath  = FileUtil.getFilePath(filePath,user.getTicket());
+        FileUtil.copyFile(srcFilePath,realTicketPath);
+        XSSFSheet xssfSheet = ExcelUtil.opneFileBySheet(realTicketPath,sheetName);
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.COMPANY_LINE, TicketProperties.COMPANY,
+                user.getCompany()+"专用票据");
 
-    public static void printOpenTicket(Ticket ticket,String sheetName) throws Exception {
-        ExcelUtil.opneFileBySheet(TicketProperties.PATH,
-                sheetName);
+        ExcelUtil.closeSheet(xssfSheet,realTicketPath);
+    }
 
-        ExcelUtil.writeToExcel(TicketProperties.TIME_LINE, TicketProperties.TIME,ticket.getDateValue());
+    /**
+     * 生成专用fuben
+     * @param srcFilePath
+     * @param filePath
+     * @param sheetName
+     * @param user
+     * @throws Exception
+     */
+    public static void generateFubenFile(String srcFilePath,String filePath,String sheetName,User user) throws Exception {
 
-        ExcelUtil.writeToExcel(TicketProperties.GOODS_ID_LINE, TicketProperties.GOODS_ID,ticket.getGoodId());
+        String realFubenPath  = FileUtil.getFilePath(filePath,user.getFuben());
+        FileUtil.copyFile(srcFilePath,realFubenPath);
 
-        ExcelUtil.writeToExcel(TicketProperties.FROM_NAME_LINE, TicketProperties.FROM_NAME,ticket.getFromName());
+        XSSFSheet xssfSheet = ExcelUtil.opneFileBySheet(realFubenPath,sheetName);
+        ExcelUtil.writeToExcel(xssfSheet,DetailListProperties.COMPANY_LINE, DetailListProperties.COMPANY,
+                user.getCompany()+"专用票据");
 
-        ExcelUtil.writeToExcel(TicketProperties.FROM_PHONE_LINE, TicketProperties.FROM_PHONE,ticket.getFromName());
+        ExcelUtil.closeSheet(xssfSheet,realFubenPath);
+    }
 
-        ExcelUtil.writeToExcel(TicketProperties.FROM_PLACE_LINE, TicketProperties.FROM_PLACE,ticket.getFromPlace());
+    /**
+     * 生成专用end
+     * @param srcFilePath
+     * @param filePath
+     * @param sheetName
+     * @param user
+     * @throws IOException
+     */
+    public static void generateEndFile(String srcFilePath,String filePath,String sheetName,User user) throws IOException {
+        String realEndPath = FileUtil.getFilePath(filePath,user.getEnd());
+        FileUtil.copyFile(srcFilePath,realEndPath);
+    }
 
-        ExcelUtil.writeToExcel(TicketProperties.TO_NAME_LINE, TicketProperties.TO_NAME,ticket.getToName());
+    public static void saveOpenTicket(String filePath,Ticket ticket,String sheetName) throws Exception {
+        XSSFSheet xssfSheet = ExcelUtil.opneFileBySheet(filePath,sheetName);
 
-        ExcelUtil.writeToExcel(TicketProperties.TO_LACE_LINE, TicketProperties.TO_PLACE,ticket.getToPlace());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.TIME_LINE, TicketProperties.TIME,ticket.getDateValue());
 
-        ExcelUtil.writeToExcel(TicketProperties.TO_PHONE_LINE, TicketProperties.TO_PHONE,ticket.getToPhone());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.GOODS_ID_LINE, TicketProperties.GOODS_ID,ticket.getGoodId());
 
-        ExcelUtil.writeToExcel(TicketProperties.GOODS_NAME_LINE, TicketProperties.GOODS_NAME,ticket.getGoodsName());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.FROM_NAME_LINE, TicketProperties.FROM_NAME,ticket.getFromName());
 
-        ExcelUtil.writeToExcel(TicketProperties.GOODS_COUNT_LINE, TicketProperties.GOODS_COUNT,ticket.getGoodsCount()==null?"":ticket.getGoodsCount().toString());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.FROM_PHONE_LINE, TicketProperties.FROM_PHONE,ticket.getFromName());
 
-        ExcelUtil.writeToExcel(TicketProperties.GOODS_CUBE_LINE, TicketProperties.GOODS_CUBE,ticket.getGoodsCube()==null?"":ticket.getGoodsCube().toString());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.FROM_PLACE_LINE, TicketProperties.FROM_PLACE,ticket.getFromPlace());
 
-        ExcelUtil.writeToExcel(TicketProperties.GOODS_WEIGHT_LINE, TicketProperties.GOODS_WEIGHT,ticket.getGoodsWeight()==null?"":ticket.getGoodsWeight().toString());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.TO_NAME_LINE, TicketProperties.TO_NAME,ticket.getToName());
 
-        ExcelUtil.writeToExcel(TicketProperties.GOODS_UNITPRICE_LINE, TicketProperties.GOODS_UNITPRICE,ticket.getGoodsUnitprice()==null?"":ticket.getGoodsUnitprice().toString());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.TO_LACE_LINE, TicketProperties.TO_PLACE,ticket.getToPlace());
 
-        ExcelUtil.writeToExcel(TicketProperties.SEND_TYPE_LINE, TicketProperties.SEND_TYPE,ticket.getSendType()==1?"送货":"自提");
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.TO_PHONE_LINE, TicketProperties.TO_PHONE,ticket.getToPhone());
 
-        ExcelUtil.writeToExcel(TicketProperties.WRITE_BACK_LINE, TicketProperties.WRITE_BACK,ticket.getWriteBack()==1?"是":"");
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.GOODS_NAME_LINE, TicketProperties.GOODS_NAME,ticket.getGoodsName());
 
-        ExcelUtil.writeToExcel(TicketProperties.PAY_TYPE_LINE, TicketProperties.PAY_TYPE,ticket.getPayType()==1?"已付":(ticket.getPayType()==2?"提付":"回付"));
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.GOODS_COUNT_LINE, TicketProperties.GOODS_COUNT,ticket.getGoodsCount()==null?"":ticket.getGoodsCount().toString());
 
-        ExcelUtil.writeToExcel(TicketProperties.PAY_COUNT_LINE, TicketProperties.PAY_COUNT,ticket.getPayCount()==null?"":ticket.getPayCount().toString());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.GOODS_CUBE_LINE, TicketProperties.GOODS_CUBE,ticket.getGoodsCube()==null?"":ticket.getGoodsCube().toString());
 
-        ExcelUtil.writeToExcel(TicketProperties.COLLECTION_LINE, TicketProperties.COLLECTION_BIG,ticket.getCollectionValue());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.GOODS_WEIGHT_LINE, TicketProperties.GOODS_WEIGHT,ticket.getGoodsWeight()==null?"":ticket.getGoodsWeight().toString());
 
-        ExcelUtil.writeToExcel(TicketProperties.COLLECTION_LINE, TicketProperties.COLLECTION_SMALL,ticket.getCollection()==null?"":ticket.getCollection().toString());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.GOODS_UNITPRICE_LINE, TicketProperties.GOODS_UNITPRICE,ticket.getGoodsUnitprice()==null?"":ticket.getGoodsUnitprice().toString());
 
-        ExcelUtil.writeToExcel(TicketProperties.CONSIGNEE_LINE, TicketProperties.CONSIGNEE,ticket.getConsignee());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.SEND_TYPE_LINE, TicketProperties.SEND_TYPE,ticket.getSendType()==1?"送货":"自提");
 
-        ExcelUtil.writeToExcel(TicketProperties.CONSIGNEE_PHONE_LINE, TicketProperties.CONSIGNEE_PHONE,ticket.getConsigneePhone());
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.WRITE_BACK_LINE, TicketProperties.WRITE_BACK,ticket.getWriteBack()==1?"是":"");
 
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.PAY_TYPE_LINE, TicketProperties.PAY_TYPE,ticket.getPayType()==1?"已付":(ticket.getPayType()==2?"提付":"回付"));
 
-        ExcelUtil.closeFile();
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.PAY_COUNT_LINE, TicketProperties.PAY_COUNT,ticket.getPayCount()==null?"":ticket.getPayCount().toString());
+
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.COLLECTION_LINE, TicketProperties.COLLECTION_BIG,ticket.getCollectionValue());
+
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.COLLECTION_LINE, TicketProperties.COLLECTION_SMALL,ticket.getCollection()==null?"":ticket.getCollection().toString());
+
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.CONSIGNEE_LINE, TicketProperties.CONSIGNEE,ticket.getConsignee());
+
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.CONSIGNEE_PHONE_LINE, TicketProperties.CONSIGNEE_PHONE,ticket.getConsigneePhone());
+
+        ExcelUtil.closeSheet(xssfSheet,filePath);
+    }
+
+    public static void saveSendList(String filePath, String sheetName,
+                                    Sends sends, List<Detail> list, User user) throws Exception {
+        int length = list.size();
+        XSSFSheet xssfSheet = ExcelUtil.opneFileBySheet(filePath,sheetName);
+
+        ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.COMPANY_LINE,DetailListProperties.COMPANY, user.getCompany()+"运输清单");
+        ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.CARID_LINE, DetailListProperties.CARID, sends.getCarid());
+        ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.BIG_PLACE_LINE, DetailListProperties.BIG_PLACE, "聊城---" + sends.getPlace() + "货物运输清单");
+        ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.LOAD_TIME_LINE, DetailListProperties.LOAD_TIME, sends.getLoadTimeValue());
+        ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.PAGELINE, DetailListProperties.PAGE, "第1页");
+
+        for (int i=0;i<length ; i++){
+            Detail temp =list.get(i);
+            ExcelUtil.createRow(xssfSheet,5+i,DetailListProperties.COLUMN_LINE, (float) 35.25);
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.NUM,i+1+"");
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.GOOD_ID,temp.getGoodId());
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.GOOD_NAME,temp.getGoodsName());
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.GOOD_COUNT,
+                    temp.getGoodsCount()==null?"":temp.getGoodsCount().toString());
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.GOOD_WEIGHT,
+                    temp.getGoodsWeight()==null?"":temp.getGoodsWeight().toString());
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.GOOD_CUBE,
+                    temp.getGoodsCube()==null?"":temp.getGoodsCube().toString());
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.PAY_COUNT,
+                    temp.getPayType()==2?(temp.getPayCount()==null?
+                            "":temp.getPayType().toString()
+                    ):"");
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.PAY_TYPE,
+                    temp.getPayType()==1?"已付":(temp.getPayType()==2?"提付":"回付"));
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.COLLECTION,
+                    temp.getCollection()==null?"":temp.getCollection().toString());
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.SEND_TYPE,
+                    temp.getSendType()==1?"送货":"自提");
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.WRITE_BACK,
+                    temp.getWriteBack()==null?"":"是");
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.TO_NAME,
+                    temp.getToName());
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.TO_PLACE,
+                    temp.getToPlace());
+            ExcelUtil.writeToExcel(xssfSheet,5+i,DetailListProperties.TO_PHONE,
+                    temp.getToPhone());
+        }
+        ExcelUtil.closeSheet(xssfSheet,filePath);
 
     }
 
-    public static void printSendList(SendList sendList,List<Detail> list, String sheetName) throws Exception {
-        int length=list.size();
-        int count=0;
-        int pages=0;
+    /**
+     * 下载文件
+     * @param response
+     * @param filePath
+     * @throws IOException
+     */
+    public static void print(HttpServletResponse response,String filePath) throws IOException {
 
-        StringBuilder tempFileName=new StringBuilder();
-        //默认每行最多35个
-        for (int i=0;i<length;i++){
-            if (count==DetailListProperties.PER_NUMS){
-                ExcelUtil.closeFile();
-                ExcelUtil.deleteFile(tempFileName.toString());
-                tempFileName.delete(0,tempFileName.length());
-                count=0;
-            }
-            if (count==0){
-                pages++;
-                ExcelUtil.createFile(tempFileName);
-                ExcelUtil.copyFile(DetailListProperties.PATH,tempFileName.toString());
-                ExcelUtil.opneFileBySheet(tempFileName.toString(),sheetName);
-                ExcelUtil.writeToExcel(DetailListProperties.CARID_LINE,DetailListProperties.CARID,sendList.getCarid());
-                ExcelUtil.writeToExcel(DetailListProperties.BIG_PLACE_LINE,DetailListProperties.BIG_PLACE,"聊城---"+sendList.getPlace()+"货物运输清单");
-                ExcelUtil.writeToExcel(DetailListProperties.LOAD_TIME_LINE,DetailListProperties.LOAD_TIME,sendList.getLoadTimeValue());
-                ExcelUtil.writeToExcel(DetailListProperties.PAGELINE,DetailListProperties.PAGE,"第"+pages+"页");
-            }
-            Detail temp=list.get(i);
-            ExcelUtil.createRow(5+count,DetailListProperties.COLUMN_LINE, (float) 35.25);
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.NUM,i+1+"");
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.GOOD_ID,temp.getGoodId());
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.GOOD_NAME,temp.getGoodsName());
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.GOOD_COUNT,
-                                    temp.getGoodsCount()==null?"":temp.getGoodsCount().toString());
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.GOOD_WEIGHT,
-                                    temp.getGoodsWeight()==null?"":temp.getGoodsWeight().toString());
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.GOOD_CUBE,
-                                    temp.getGoodsCube()==null?"":temp.getGoodsCube().toString());
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.PAY_COUNT,
-                                    temp.getPayType()==2?(temp.getPayCount()==null?
-                                            "":temp.getPayType().toString()
-                                    ):"");
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.PAY_TYPE,
-                                    temp.getPayType()==1?"已付":(temp.getPayType()==2?"提付":"回付"));
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.COLLECTION,
-                                    temp.getCollection()==null?"":temp.getCollection().toString());
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.SEND_TYPE,
-                                    temp.getSendType()==1?"送货":"自提");
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.WRITE_BACK,
-                                    temp.getWriteBack()==null?"":"是");
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.TO_NAME,
-                                    temp.getToName());
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.TO_PLACE,
-                                    temp.getToPlace());
-            ExcelUtil.writeToExcel(5+count,DetailListProperties.TO_PHONE,
-                                    temp.getToPhone());
+        File file = new File(filePath);
 
-            count++;
-        }
-        /**
-         * 打印结尾
-         */
+        try(FileInputStream inputStream = new FileInputStream(file);
+        OutputStream outputStream = response.getOutputStream()) {
 
-        FileInputStream fileInputStream=new FileInputStream(ExcelUtil.path+DetailListProperties.endPath);
-        XSSFWorkbook xssfWorkbook=new XSSFWorkbook(fileInputStream);
-        for (int i=0;i<3;i++){
-            if (count==DetailListProperties.PER_NUMS){
-                ExcelUtil.closeFile();
-                ExcelUtil.deleteFile(tempFileName.toString());
-                tempFileName.delete(0,tempFileName.length());
-                count=0;
-            }
-            if (count==0){
-                pages++;
-                ExcelUtil.createFile(tempFileName);
-                ExcelUtil.copyFile(DetailListProperties.PATH,tempFileName.toString());
-                ExcelUtil.opneFileBySheet(tempFileName.toString(),sheetName);
-                ExcelUtil.writeToExcel(DetailListProperties.CARID_LINE,DetailListProperties.CARID,sendList.getCarid());
-                ExcelUtil.writeToExcel(DetailListProperties.BIG_PLACE_LINE,DetailListProperties.BIG_PLACE,"聊城---"+sendList.getPlace()+"货物运输清单");
-                ExcelUtil.writeToExcel(DetailListProperties.LOAD_TIME_LINE,DetailListProperties.LOAD_TIME,sendList.getLoadTimeValue());
-                ExcelUtil.writeToExcel(DetailListProperties.PAGELINE,DetailListProperties.PAGE,"第"+pages+"页");
-            }
-            ExcelUtil.copyRow(xssfWorkbook,"Sheet1",i,count+5,(float)35.25,i);
-            switch (i){
-                case 0:
-                    ExcelUtil.writeToExcel(count+5,DetailListProperties.PAGE_COUNT,
-                                        sendList.getTotalPages()+"");
-                    ExcelUtil.writeToExcel(count+5,DetailListProperties.MONEY_HE,
-                                            sendList.getMoneysHe()==null?"":sendList.getMoneysHe().toString());
+            response.setContentType("application/x-download;charset=utf-8");
+            response.setCharacterEncoding("UTF-8");
 
-                    ExcelUtil.writeToExcel(count+5,DetailListProperties.MONEYS_ME,
-                                            sendList.getMoneysMe()==null?"":sendList.getMoneysMe().toString());
-                    break;
-                case 2:
-                    ExcelUtil.writeToExcel(count+5,DetailListProperties.XIEHUO,sendList.getPutPlace());
-                    ExcelUtil.writeToExcel(count+5,DetailListProperties.LINKPHONE,sendList.getLinkPhone());
-                    break;
-            }
-            count++;
-        }
-        fileInputStream.close();
-        xssfWorkbook.close();
-        if (count!=0) {
-            ExcelUtil.closeFile();
-            ExcelUtil.deleteFile(tempFileName.toString());
+            String fileName = file.getName();
+
+            response.addHeader("Content-Disposition", "attachment; filename*=utf-8''" + fileName);
+            FileCopyUtils.copy(inputStream,outputStream);
+        }catch (IOException e) {
+            throw e;
         }
     }
-
 }

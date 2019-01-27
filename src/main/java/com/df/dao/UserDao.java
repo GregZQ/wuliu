@@ -1,10 +1,7 @@
 package com.df.dao;
 
 import com.df.domain.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 /**
  * 用户dao
@@ -17,8 +14,13 @@ public interface UserDao {
 
     @Insert("insert into t_user(username,password,company) " +
             "values(#{username},#{password},#{company})")
+    @Options(useGeneratedKeys=true, keyProperty="id")
     void insert(User user);
 
     @Select("select * from t_user where username=#{username}")
     User findUserByUsername(@Param("username") String username);
+
+    @Update("update t_user set ticket=#{ticket},fuben=#{fuben},end=#{end} " +
+            "where id=#{id}")
+    void updatePath(User user);
 }

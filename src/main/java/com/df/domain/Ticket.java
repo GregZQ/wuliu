@@ -17,7 +17,7 @@ public class Ticket {
 
     private Date date;
 
-    private Date sendTime;
+
     private String goodId;
 
     private String fromName;
@@ -33,7 +33,6 @@ public class Ticket {
     private String toPhone;
 
     private String goodsName;
-
 
     private BigDecimal goodsCount;
 
@@ -59,30 +58,44 @@ public class Ticket {
 
     private String consigneePhone;
 
+    private Integer state;
+
+    private Integer uid;
+
+    private String savePath;
+
     private Integer flag;
 
-    private Date toTime;
-    public Date getSendTime() {
-        return sendTime;
+    public void setState(Integer state) {
+        this.state = state;
     }
 
-    public void setSendTime(Date sendTime) {
-        this.sendTime = sendTime;
+    public Integer getState() {
+        return state;
     }
+
+    public void setSavePath(String savePath) {
+        this.savePath = savePath;
+    }
+
+    public String getSavePath() {
+        return savePath;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+    
     public Integer getFlag() {
         return flag;
     }
 
     public void setFlag(Integer flag) {
         this.flag = flag;
-    }
-
-    public Date getToTime() {
-        return toTime;
-    }
-
-    public void setToTime(Date toTime) {
-        this.toTime = toTime;
     }
 
     public Integer getId() {

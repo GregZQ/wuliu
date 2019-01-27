@@ -52,13 +52,20 @@
 
 			<div id="my_menu" class="sdmenu">
 				<div >
-					<span>业务处理</span>
+					<span>货物管理</span>
 					<a  th:href="@{/openticket}">电脑开票</a>
-					<a  th:href="@{/detail}">入库明细</a>
-
-					<a th:href="@{/historydetail}">历史清单</a>
+					<a  th:href="@{/detail}">入库明细/管理</a>
+				</div>
+				<div>
+					<span>历史信息</span>
 					<a th:href="@{/historyticket}">历史开票</a>
-				</div>    
+					<a th:href="@{/historydetail}">历史运输清单</a>
+				</div>
+				<div>
+					<span>票据导出</span>
+					<a th:href="@{/printticket}">开票数据导出</a>
+					<a th:href="@{/printdetail}">运输清单导出</a>
+				</div>
 		    </div>
 
      </div>
@@ -77,7 +84,7 @@
      <div class="right_cont">
 		 <ul class="breadcrumb">当前位置：
 		  <a href="#">首页</a> <span class="divider">/</span>
-		  <a href="#">业务处理</a> <span class="divider">/</span>
+		  <a href="#">货物管理</a> <span class="divider">/</span>
 		  入库明细
 		</ul>
       
@@ -119,7 +126,7 @@
 
 	       <tr align="center"  v-for="ticket in datas">
 					<td>
-						<label v-if="ticket.sendTime==null">
+						<label v-if="ticket.state==0">
 							<input type="checkbox" name="checkbox"  @click="addSelects(ticket.id)"  :id="ticket.id">
 						</label>
 					</td>
@@ -145,7 +152,6 @@
 					 <td nowrap="nowrap" v-text="ticket.sendTimeValue ==null ? '':ticket.sendTimeValue">2017-2-12</td>
 					 <td nowrap="nowrap">
 						<a href="javascript:void(0)"  @click="del(ticket.id)">删除</a>
-
 					 </td>
 	         </tr>
      </tbody>

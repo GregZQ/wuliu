@@ -1,5 +1,7 @@
 package com.df.domain;
 
+import org.apache.ibatis.annotations.Mapper;
+
 /**
  * 用户User
  */
@@ -11,6 +13,36 @@ public class User {
     private String password;
 
     private String company;
+
+    private String ticket;
+
+    private String fuben;
+
+    private String end;
+
+    public String getFuben() {
+        return fuben;
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
+    public String getTicket() {
+        return ticket;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
+    }
+
+    public void setFuben(String fuben) {
+        this.fuben = fuben;
+    }
+
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
+    }
 
     public String getUsername() {
         return username;

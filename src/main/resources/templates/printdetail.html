@@ -10,12 +10,11 @@
     <script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
     <script type="text/javascript" th:src="@{/js/sdmenu.js}"></script>
     <script type="text/javascript" th:src="@{/js/laydate/laydate.js}"></script>
-
 </head>
 
 <body>
 <div class="header">
-    <div class="logo"><img  th:src="@{img/logo.png}" /></div>
+    <div class="logo"><img  th:src="@{/img/logo.png}" /></div>
 
     <div class="header-right">
         <i class="icon-off icon-white"></i> <a id="modal-973558" href="#modal-container-973558" role="button" data-toggle="modal">注销</a>
@@ -38,11 +37,10 @@
     </div>
 </div>
 <!-- 顶部 -->
-<!--内容页-->
+
 <div id="middle">
-    <!--left content-->
     <div class="left">
-        <!--菜单栏脚本-->
+
         <script type="text/javascript">
             var myMenu;
             window.onload = function() {
@@ -51,7 +49,6 @@
             };
         </script>
 
-        <!--菜单栏-->
         <div id="my_menu" class="sdmenu">
             <div >
                 <span>货物管理</span>
@@ -82,78 +79,72 @@
     </script>
 
     <div class="right"  id="mainFrame">
-
         <div class="right_cont">
             <ul class="breadcrumb">当前位置：
                 <a href="#">首页</a> <span class="divider">/</span>
-                <a href="#">业务处理</a> <span class="divider">/</span>
-                成功
+                <a href="#">票据导出</a> <span class="divider">/</span>
+                运输清单导出
             </ul>
-            <div class="title_right">
-                <strong>成功</strong>
-            </div>
-
-            <div>
-                <h3>打印中，请稍后。。。。。。，</h3>
-                <a th:href="@{/senddetails/{sid}(sid=${sid})}">点此返回运输清单</a>
-            </div>
         </div>
+        <table class="table table-bordered table-striped table-hover">
+            <tbody>
+            <tr align="center">
+                <td nowrap="nowrap"><strong>序号</strong></td>
+                <td nowrap="nowrap"><strong>发货地点</strong></td>
+                <td nowrap="nowrap"><strong>承运车号</strong></td>
+                <td nowrap="nowrap"><strong>装车日期</strong></td>
+                <td width="80" nowrap="nowrap"><strong> 操作 </strong></td>
+            </tr>
+            <!---->
+            <tr align="center" v-for="(item,index) in datas">
+                <td nowrap="nowrap" v-text="index+1">1</td>
+                <td nowrap="nowrap" v-text="item.place">聊城-哈尔滨</td>
+                <td nowrap="nowrap" v-text="item.carid">鲁J12528</td>
+                <td nowrap="nowrap" v-text="item.loadTimeValue">2015-12-12</td>
+                <td nowrap="nowrap">
+                    <a href="javascript:void(0)"  @click="download(item.sid)">导出</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="page_show">
+            <ul>
+                <li v-if="currentPage !=1 && totalPages > 1">
+                    <a  href="javascript:void(0)" @click="toPage(currentPage-1)">上一页</a>
+                </li>
+
+                <li  v-for="index in end" v-if="index>=start">
+                    <span  v-if="index == currentPage && index>0"  v-text="index"></span>
+                    <a href="javascript:void(0)" v-if="index != currentPage && index>0"  @click="toPage(index)">[{{index}}]</a>
+                </li>
+
+                <li v-if="currentPage < totalPages">
+                    <a href="javascript:void(0)" @click="toPage(currentPage+1)">下一页</a>
+                </li>
+            </ul>
+        </div>
+        <table  class="margin-bottom-20 table  no-border" >
+        </table>
+
     </div>
+</div>
 </div>
 
 <!-- 底部 -->
-<div id="footer">
-    版权所有：大发客流 &copy; 2015&nbsp;&nbsp;&nbsp;&nbsp;<
+<div id="footer">版权所有：大发客流 &copy; 2015&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.mycodes.net/" target="_blank">源码之家</a></div>
 
-</div>
-
-
-
-
+<script type="text/javascript" th:src="@{/js/printdetail.js}"></script>
 <script>
-
-    $(function () {
-        writeBackChange();
-    })
-    function writeBackChange(){
-        if ($("#writeBack").attr('checked')) {
-            $("input[name='writeBack']").val(1);
-        }else{
-            $("input[name='writeBack']").val(0);
-        }
-    }
-
-    function checkVal(value){
-        if (value==null || value ==undefined ||value.trim() == ""){
-
-            return false;
-        }
-        return true;
-    }
-
-    function preview(tag)
-    {
-        var value1=$('input:radio[name="sendType"]:checked').val();
-
-        var value2=$('input:radio[name="payType"]:checked').val();
-
-        if (checkVal(value1) &&  checkVal(value2)) {
-            $("#tag").val(tag);
-            $("#ticketForm").submit();
-        }else{
-            alert("请选择送货(支付)方式");
-        }
-    }
-
-
     !function(){
         laydate.skin('molv');
         laydate({elem: '#Calendar'});
+        laydate.skin('molv');
+        laydate({elem: '#Calendar2'});
     }();
 
 </script>
 
-<script src="js/content.js"></script>
+
 
 
 </body>

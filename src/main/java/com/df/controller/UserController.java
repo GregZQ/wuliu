@@ -1,5 +1,6 @@
 package com.df.controller;
 
+import com.df.controller.utils.PrintUtils;
 import com.df.domain.User;
 import com.df.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,26 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Value("${SYS_TICKET_FILE}")
+    private String sysTicketFile;
+
+    @Value("${SYS_FUBEN_FILE}")
+    private String sysFubenFile;
+
+    @Value("${SYS_END_FILE}")
+    private String sysEndFile;
+
+    @Value("${USER_FILE_PATH}")
+    private String userFilePath;
+
+    @Value("${TICKET_SHEET}")
+    private String ticketSheet;
+
+    @Value("${FUBEN_SHEET}")
+    private String fubenSheet;
+
+    @Value("${END_SHEET}")
+    private String endSheet;
     /**
      * 用户登录
      * @param username  用户名
@@ -32,15 +53,19 @@ public class UserController {
     @PostMapping("/tologin")
     public String login(String username, String password,
                         HttpServletResponse response, Model model){
-
+        //表单校验
         if (!checkLoginForm(username,password,model)){
             return "login";
         }
+
+        //判断用户账号密码是否正确
         User user = this.userService.findUserByUsername(username);
         if (Objects.isNull(user)||!StringUtils.equals(user.getPassword(),password)){
             model.addAttribute("username","用户名或密码不正确");
             return "login";
         }
+
+        //写入到cookie当中
         Cookie cookie=new Cookie("local_user_info",username);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -56,6 +81,7 @@ public class UserController {
      */
     @GetMapping("/tologout")
     public String logout(HttpServletRequest request,HttpServletResponse response){
+        //删除cookie
         Cookie deleteNewCookie=new Cookie("local_user_info","admin");
         deleteNewCookie.setMaxAge(0);
         response.addCookie(deleteNewCookie);
@@ -73,15 +99,28 @@ public class UserController {
      */
     @PostMapping("/toregister")
     public String register(String username,String password,String password2,
-                           String company,Model model){
+                           String company,Model model) throws Exception {
         //表单数据检查
         if (!checkRegisterForm(username,password,password2,company,model)){
             return "register";
         }
         //补全User
         User user = User.newInstance(username,password,company);
+
         //插入用户
         this.userService.insert(user);
+
+        //更新文件路径信息
+        user.setTicket("ticket_"+user.getId()+".xlsx");
+        user.setFuben("fuben_"+user.getId()+".xlsx");
+        user.setEnd("end_"+user.getId()+".xlsx");
+        this.userService.updatePath(user);
+
+        //为该用户创建ticket专用表
+        PrintUtils.generateTicketFile(sysTicketFile,userFilePath,ticketSheet,user);
+        PrintUtils.generateFubenFile(sysFubenFile,userFilePath,fubenSheet,user);
+        PrintUtils.generateEndFile(sysEndFile,userFilePath,endSheet,user);
+
         return "redirect:/success_register";
     }
 

@@ -1,15 +1,13 @@
 package com.df.controller;
 
-import com.df.controller.utils.DetailListProperties;
-import com.df.controller.utils.PrintUtils;
-import com.df.controller.utils.TimeTransfer;
-import com.df.domain.Detail;
-import com.df.domain.PageBean;
-import com.df.domain.SendList;
-import com.df.service.DetailService;
-import com.df.service.SendService;
-import org.apache.ibatis.annotations.Param;
+import com.df.constant.TicketStat;
+import com.df.controller.utils.*;
+import com.df.domain.*;
+import com.df.service.TicketService;
+import com.df.service.SendsService;
+import com.df.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /*
 * 与发车有关的类
@@ -28,10 +29,22 @@ import java.util.List;
 public class SendController {
 
     @Autowired
-    private DetailService detailService;
+    private TicketService ticketService;
 
     @Autowired
-    private SendService sendService;
+    private SendsService sendsService;
+
+    @Autowired
+    private UserService userService;
+
+    @Value("${USER_FILE_PATH}")
+    private String userFilePath;
+
+    @Value("${SAVE_PATH}")
+    private String savePath;
+
+    @Value("${FUBEN_SHEET}")
+    private String fubenSheet;
 
     /**
      * 根据选择的selects，生成运输清单表
@@ -39,24 +52,22 @@ public class SendController {
      * @return
      */
     @PostMapping("/adddetail")
-    public ModelAndView  addDetail(String selects){
-        SendList sendList=new SendList();
+    public ModelAndView  addDetail(HttpServletRequest request,String selects){
+        Sends sends =new Sends();
+        sends.setSendTime(new Date());
 
-        if (selects!=null&&!selects.trim().equals("")){
-
-
+        if (Objects.nonNull(sends)){
             String[] values= selects.split(",");
+            this.sendsService.createNew(sends);
 
-            this.sendService.createNew(sendList);
-
-            //设置选中的出库日期
+            //设置为选中未发送
             for (int i=0;i<values.length;i++){
-                this.detailService.updateDateSidById(Integer.valueOf(values[i]),
-                                                       Integer.valueOf(sendList.getSid()), TimeTransfer.getCurrentDate());
+                this.ticketService.updateStateSidById(Integer.valueOf(values[i]),
+                                                       Integer.valueOf(sends.getSid()), TicketStat.NOSTAT.getCode());
             }
 
             ModelAndView modelAndView=new ModelAndView("redirect:" +
-                    "/senddetails/"+sendList.getSid());
+                    "/senddetails/"+ sends.getSid());
             return  modelAndView;
         }
         return null;
@@ -64,59 +75,64 @@ public class SendController {
 
     /**
      * 根据id列出运输清单
-     * 同时列出页数，每页固定35行
      * @param id
      * @param model
      * @return
      */
     @GetMapping("/senddetails/{id}")
-    public String showList(@PathVariable Integer id,Model model){
+    public String showList(HttpServletRequest request ,@PathVariable Integer id,Model model){
 
             BigDecimal temp=new BigDecimal(0);
+            List<Detail> list=this.ticketService.findDetailListBySid(id);
+            Sends sends =this.sendsService.findSendListById(id);
 
-            List<Detail> list=this.detailService.findDetailListBySid(id);
+            //获取用户
+            String username = CookitUtil.getUsername(request);
+            User user = this.userService.findUserByUsername(username);
 
-
-            SendList sendList=this.sendService.findSendListById(id);
-
-            if (sendList.getMoneysMe()==null) {
-                BigDecimal moneyMe = new BigDecimal(0);
-                BigDecimal moneyHe = new BigDecimal(0);
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getPayType() == 2) {//payType不会为空
-                       moneyMe= moneyMe.add(list.get(i).getPayCount()==null?temp:list.get(i).getPayCount());
-                    }
-                    moneyHe= moneyHe.add(list.get(i).getCollection()==null?temp:list.get(i).getCollection());
-                }
-                int tempCount=list.size();
-                tempCount+=3;
-                if (tempCount% DetailListProperties.PER_NUMS==0){
-                    tempCount/=DetailListProperties.PER_NUMS;
-                }else{
-                    tempCount/=DetailListProperties.PER_NUMS;
-                    tempCount+=1;
-                }
-                sendList.setTotalPages(tempCount);
-                sendList.setMoneysMe(moneyMe);
-                sendList.setMoneysHe(moneyHe);
-            }
+            model.addAttribute("company",user.getCompany());
             model.addAttribute("list",list);
+            model.addAttribute("sends", sends);
 
-            model.addAttribute("sendList",sendList);
+
             return "senddetails";
     }
 
+    /**
+     * 添加发货清单
+     * @param request
+     * @param sends
+     * @param model
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/senddetails/finish")
-    public String saveList(SendList sendList,Model model){
-        /*
-        * 更新完毕后打印
-        * */
-        this.sendService.updateSendList(sendList);
+    public String saveList(HttpServletRequest request, Sends sends, Model model) throws Exception {
 
-        List<Detail> list=this.detailService.findDetailListBySid(sendList.getSid());
-        print(sendList,list,"Sheet1");
+        //获取当前登录用户
+        String username = CookitUtil.getUsername(request);
+        User user = this.userService.findUserByUsername(username);
 
-        model.addAttribute("sid",sendList.getSid());
+        //更新票据状态
+        List<Detail> list = this.ticketService.findDetailListBySid(sends.getSid());
+        list.stream().forEach(
+            detail -> {
+                this.ticketService.updateStateSidById(detail.getId(),
+                        sends.getSid(),TicketStat.CHOSE.getCode());
+            }
+        );
+
+        //生成文件
+        String fileName = ExcelUtil.generateExcelName();
+        FileUtil.copyFile(userFilePath,user.getFuben(),savePath,fileName);
+        String filePath = FileUtil.getFilePath(savePath,fileName);
+        PrintUtils.saveSendList(filePath,fubenSheet, sends,list,user);
+
+        //补全数据
+        sends.setSavePath(filePath);
+        sends.setUid(user.getId());
+        this.sendsService.updateSendList(sends);
+        model.addAttribute("sid", sends.getSid());
         return "success";
     }
 
@@ -124,7 +140,11 @@ public class SendController {
     * 历史清单查询
     * */
     @GetMapping("/senddetails/query")
-    public @ResponseBody  PageBean queryHistory(String  loadTime, String carid, PageBean pageBean){
+    public @ResponseBody  PageBean queryHistory(HttpServletRequest request,String  loadTime, String carid, PageBean pageBean){
+            String username = CookitUtil.getUsername(request);
+
+            User user = this.userService.findUserByUsername(username);
+
             if (loadTime!=null&&loadTime.trim().equals("")){
                 loadTime=null;
             }
@@ -133,32 +153,27 @@ public class SendController {
             }
             pageBean=PageBean.checkPageBean(pageBean);
 
-            int count=this.sendService.getCountByTimeAndCarId(loadTime,carid);
+            int count=this.sendsService.getCountByTimeAndCarIdAndUid(loadTime,carid,user.getId());
 
-            List<SendList> list=this.sendService.queryHistoryByTimeAndCarId(loadTime,carid,
-                    (pageBean.getCurrentPage()-1)*pageBean.getPer(),pageBean.getPer());
+            List<Sends> list=this.sendsService.queryHistoryByTimeAndCarIdAndUid(loadTime,carid,
+                    (pageBean.getCurrentPage()-1)*pageBean.getPer(),pageBean.getPer(),user.getId());
 
             pageBean=PageBean.finishPageBean(list,count,pageBean);
             return pageBean;
     }
 
+    /**
+     * 根据id删除发货清单
+     * 对应相应的货物信息也会删除
+     * @param id
+     * @return
+     */
     @PostMapping("/senddetails/{id}")
     public @ResponseBody String removeSend(@PathVariable Integer id){
-        Integer count=this.sendService.deleteBySid(id);
+        Integer count=this.sendsService.deleteBySid(id);
         if (count>0){
             return "true";
         }
         return "false";
-    }
-    /*
-    * 进行打印
-    * */
-    private void print(SendList sendList,List<Detail> list,String sheetName)  {
-
-        try {
-            PrintUtils.printSendList(sendList,list,sheetName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

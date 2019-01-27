@@ -4,9 +4,13 @@ import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComThread;
 import com.jacob.com.Dispatch;
 import com.jacob.com.Variant;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,102 +22,103 @@ import java.util.UUID;
 /**
  * Created by Jone on 2018-04-08.
  */
+@Component
 public class ExcelUtil {
 
-    public static  String path=null;
-    //操作的excel
-    private static XSSFWorkbook workbook = null;
-    private static File file=null;
-    //操作的sheet
-    private static XSSFSheet sheet=null;
-    //操作的文件路径
-    private static String filePath;
-    //操作的row
-    private static XSSFRow row;
-    static {
-        path="E:\\ideaProject\\dfwuliu\\src\\main\\resources\\resultfile\\";
-    }
-    /**
-     * 判断文件是否存在
-     * @param filePath
-     * @return
-     */
-    public static boolean fileExist(String filePath){
-        boolean flag=false;
-        file=new File(filePath);
-        ExcelUtil.filePath=filePath;
-        flag=file.exists();
-        return flag;
-    }
 
     /**
-     * 操作文件之前先打开文件
-     * @param filePath
-     * @param sheetName
+     * 打开excel文件
+     * 返回XSSFWorkbook
+     * @param filePath  文件路径
+     * @return
      * @throws Exception
      */
-    public static final void  opneFileBySheet(String filePath,String sheetName) throws Exception {
-        String realPath=ExcelUtil.path+filePath;
-        if (!fileExist(realPath)){
+    public static final XSSFWorkbook openFileByWorkBook(String filePath) throws Exception {
+        if (!FileUtil.fileExist(filePath)){
             throw new Exception("文件不存在");
         }
-        workbook=new XSSFWorkbook(new FileInputStream(realPath));
-        sheet=workbook.getSheet(sheetName);
-    }
+        XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(new File(filePath)));
 
-    public static Sheet getSheet(){
-        return ExcelUtil.sheet;
+        return workbook;
     }
 
     /**
-     * 写入到excel中
-     * @param rowNumber 哪一行
-     * @param columnNumber 哪一列
-     * @param value 写入value的值
+     * 打开excel文件
+     * 返回XSSFSheet
+     * @param filePath 文件路径
+     * @param sheetName SheetName
      * @throws Exception
      */
-    public static void writeToExcel(Integer rowNumber,Integer columnNumber,String value) throws Exception {
-        if (workbook==null){
-            throw new Exception("文件未打开");
-        }
+    public static final XSSFSheet  opneFileBySheet(String filePath,String sheetName) throws Exception {
+        XSSFWorkbook workbook=openFileByWorkBook(filePath);
+        XSSFSheet sheet=workbook.getSheet(sheetName);
+        return sheet;
+    }
+
+    /**
+     *  向指定表格写入数据
+     * @param sheet 哪个表
+     * @param rowNumber 哪一行
+     * @param columnNumber 哪一列
+     * @param value 写入的值
+     * @throws Exception
+     */
+    public static void writeToExcel(XSSFSheet sheet,
+                                    Integer rowNumber,Integer columnNumber,String value) throws Exception {
+
         XSSFRow row=sheet.getRow(rowNumber);
         row.getCell(columnNumber).setCellValue(value==null?"":value);
     }
 
     /**
-     * 设置行高
+     * 创建一行表格（指定行高）
      * @param rowNumber
      * @param lineHegiht
      */
-    public static void  createRow(Integer rowNumber,Integer column,float lineHegiht){
+    public static XSSFRow  createRow(XSSFSheet xssfSheet,Integer rowNumber,Integer column,float lineHegiht){
 
-        row=sheet.createRow(rowNumber);
+        XSSFRow row=xssfSheet.createRow(rowNumber);
+        XSSFWorkbook xssfWorkbook = xssfSheet.getWorkbook();
         row.setHeightInPoints(lineHegiht);
-        createCell(column);
+        createCell(xssfWorkbook,row,column);
+
+        return row;
     }
 
-    private static void createCell(Integer column) {
-        XSSFCell xssfCell= row.createCell(0);
-        setCellStyle(xssfCell,true,"黑体");
+    /**
+     *  创建一行当中的表格
+     * @param xssfWorkbook
+     * @param xssfRow
+     * @param column
+     */
+    private static void createCell(XSSFWorkbook xssfWorkbook,XSSFRow xssfRow,Integer column) {
+        XSSFCell xssfCell= xssfRow.createCell(0);
+        setCellStyle(xssfWorkbook,xssfCell,true,"黑体");
         for (int i=1;i<column;i++){
-           xssfCell= row.createCell(i);
-            setCellStyle(xssfCell,false,"Tahoma");
+            xssfCell= xssfRow.createCell(i);
+            setCellStyle(xssfWorkbook,xssfCell,false,"Tahoma");
         }
     }
 
+    /**
+     * 设置单元格样式
+     * @param xssfWorkbook
+     * @param cell
+     * @param flag
+     * @param fontStype
+     */
+    public static void setCellStyle(XSSFWorkbook xssfWorkbook,XSSFCell cell,Boolean flag,String fontStype){
 
-    public static void setCellStyle(XSSFCell cell,Boolean flag,String fontStype){
 
-
-        XSSFCellStyle cellStyle = workbook.createCellStyle(); // 单元格样式
-        Font fontStyle = workbook.createFont(); // 字体样式
+        XSSFCellStyle cellStyle = xssfWorkbook.createCellStyle(); // 单元格样式
+        Font fontStyle = xssfWorkbook.createFont(); // 字体样式
         fontStyle.setBold(flag); // 加粗
         fontStyle.setFontName(fontStype); // 字体
         fontStyle.setFontHeightInPoints((short) 12); // 大小
         // 将字体样式添加到单元格样式中
         cellStyle.setFont(fontStyle);
         // 边框，居中
-        XSSFDataFormat xssfDataFormat=workbook.createDataFormat();
+        XSSFDataFormat xssfDataFormat=xssfWorkbook.createDataFormat();
         //设置自动换行
         cellStyle.setWrapText(true);
         //全部设置为文本
@@ -127,35 +132,43 @@ public class ExcelUtil {
         cell.setCellStyle(cellStyle);
     }
 
-    public static void meage(int startRow,int endRow,int starCol,int endCol){
+    /**
+     * 单元格合并
+     * @param xssfSheet
+     * @param startRow 开始的行
+     * @param endRow   结束的行
+     * @param starCol  开始的列
+     * @param endCol   结束的列
+     */
+    public static void meage(XSSFSheet xssfSheet,int startRow,int endRow,int starCol,int endCol){
         CellRangeAddress cellRangeAddress=new CellRangeAddress(startRow,
                 endRow,starCol,endCol);
-        sheet.addMergedRegion(cellRangeAddress);
+        xssfSheet.addMergedRegion(cellRangeAddress);
     }
 
     /**
-     * 关闭文件，关闭之前将值写入到文件当中
+     * 将excel写入到指定输出流当中
      * @param fileOutputStream
      * @throws IOException
      */
-    private static void writeToFile(FileOutputStream fileOutputStream)throws IOException {
-        if (fileOutputStream!=null&&workbook!=null){
-            workbook.write(fileOutputStream);
+    private static void writeToFile(XSSFWorkbook xssfWorkbook,FileOutputStream fileOutputStream)throws IOException {
+        if (fileOutputStream!=null&&xssfWorkbook!=null){
+            xssfWorkbook.write(fileOutputStream);
         }
     }
-    public static void closeFile() throws IOException {
+/*    public static void closeFile(XSSFWorkbook xssfWorkbook) throws IOException {
         FileOutputStream fileOut = new FileOutputStream(filePath);
-        writeToFile(fileOut);
-        workbook.close();
+        writeToFile(xssfWorkbook,fileOut);
+        xssfWorkbook.close();
         fileOut.close();
         printFile();
-        workbook=null;
+        xssfWorkbook=null;
         file=null;
         filePath=null;
         sheet=null;
-    }
+    }*/
 
-    private static void printFile(){
+    private static void printFile(String filePath){
         ComThread.InitSTA();
         ActiveXComponent wd=null;
         try {
@@ -184,17 +197,33 @@ public class ExcelUtil {
         }
     }
 
-    public static void copyRow(XSSFWorkbook workbook,String sheetName,int before,int to,float height,int nums){
+    /**
+     * 行复制
+     * @param originPath
+     * @param filePath
+     * @param desSheetName
+     * @param workbook
+     * @param sheetName
+     * @param before
+     * @param to
+     * @param height
+     * @param nums
+     * @throws Exception
+     */
+    public static void copyRow(XSSFWorkbook workbook,String sheetName,
+                               int before,int to,float height,int nums) throws Exception {
         XSSFSheet temp=workbook.getSheet(sheetName);
+        XSSFSheet sheet = null;//opneFileBySheet(originPath,filePath,desSheetName);
         sheet.createRow(to);
-        copyRow(temp.getRow(before),sheet.getRow(to),height,nums);
+
+        copyRow(sheet,temp.getRow(before),sheet.getRow(to),height,nums);
     }
-    public static void copyRow(XSSFRow fromRow,XSSFRow toRow,float height,int nums){
+    public static void copyRow(XSSFSheet xssfSheet,XSSFRow fromRow,XSSFRow toRow,float height,int nums){
         toRow.setHeightInPoints(height);
         for (Iterator cellIt = fromRow.cellIterator(); cellIt.hasNext();) {
             XSSFCell tmpCell = (XSSFCell) cellIt.next();
             XSSFCell newCell = toRow.createCell(tmpCell.getColumnIndex());
-            copyCell(workbook,tmpCell, newCell);
+            copyCell(xssfSheet,tmpCell, newCell);
         }
         /*
             * 以下的内容是调整单元格式的，只针对当前定制好的表格有用
@@ -202,40 +231,54 @@ public class ExcelUtil {
         int start=toRow.getRowNum();
         switch (nums){
             case 0:
-                meage(start,start,0,1);
-                meage(start,start,3,4);
-                meage(start,start,5,6);
-                meage(start,start,7,8);
-                meage(start,start,9,11);
-                meage(start,start,13,15);
+                meage(xssfSheet,start,start,0,1);
+                meage(xssfSheet,start,start,3,4);
+                meage(xssfSheet,start,start,5,6);
+                meage(xssfSheet,start,start,7,8);
+                meage(xssfSheet,start,start,9,11);
+                meage(xssfSheet,start,start,13,15);
                 break;
             case 1:
-                meage(start,start,0,1);
-                meage(start,start,3,4);
-                meage(start,start,5,7);
-                meage(start,start,9,11);
-                meage(start,start,13,15);
+                meage(xssfSheet,start,start,0,1);
+                meage(xssfSheet,start,start,3,4);
+                meage(xssfSheet,start,start,5,7);
+                meage(xssfSheet,start,start,9,11);
+                meage(xssfSheet,start,start,13,15);
                 break;
             case 2:
-                meage(start,start,0,1);
-                meage(start,start,2,4);
-                meage(start,start,5,6);
-                meage(start,start,7,8);
-                meage(start,start,10,11);
-                meage(start,start,13,15);
-                meage(start-2,start,12,12);
+                meage(xssfSheet,start,start,0,1);
+                meage(xssfSheet,start,start,2,4);
+                meage(xssfSheet,start,start,5,6);
+                meage(xssfSheet,start,start,7,8);
+                meage(xssfSheet,start,start,10,11);
+                meage(xssfSheet,start,start,13,15);
+                meage(xssfSheet,start-2,start,12,12);
                 break;
         }
         nums++;
     }
+
+    /**
+     * 复制单元格格式
+     * @param fromStyle 被复制的单元格格式
+     * @param toStyle   新的单元格格式
+     */
     public static void copyCellStyle(XSSFCellStyle fromStyle,
                                      XSSFCellStyle toStyle) {
-            toStyle.cloneStyleFrom(fromStyle);
+        toStyle.cloneStyleFrom(fromStyle);
 
     }
 
-        public static void copyCell(XSSFWorkbook wb,XSSFCell srcCell, XSSFCell distCell) {
-        XSSFCellStyle newstyle=wb.createCellStyle();
+    /**
+     * 复制单元格
+     * @param sheet  最后需要的单元格
+     * @param srcCell  源单元格
+     * @param distCell 目的单元格
+     */
+    public static void copyCell(XSSFSheet sheet,XSSFCell srcCell, XSSFCell distCell) {
+
+        XSSFWorkbook workbook = sheet.getWorkbook();
+        XSSFCellStyle newstyle=workbook.createCellStyle();
         copyCellStyle(srcCell.getCellStyle(), newstyle);
         //样式
         distCell.setCellStyle(newstyle);
@@ -245,14 +288,13 @@ public class ExcelUtil {
         }
     }
 
-    public static void copyFile(String srcFile,String desFile) throws IOException {
-        srcFile=ExcelUtil.path+srcFile;
-        File file=new File(srcFile);
+    public static void copyFile(String originSrcFile,String srcFile,String originDesFile,String desFile) throws IOException {
 
-        FileInputStream inputStream=new FileInputStream(file);
+        File src=new File(originSrcFile,srcFile);
 
-        desFile=ExcelUtil.path+desFile;
-        File toFile=new File(desFile);
+        FileInputStream inputStream=new FileInputStream(src);
+
+        File toFile=new File(originDesFile,desFile);
         FileOutputStream fileOutputStream=new FileOutputStream(toFile);
         byte[] bytes=new byte[1024];
         int length;
@@ -267,16 +309,31 @@ public class ExcelUtil {
 
     }
 
-    public static void deleteFile(String fileName){
-        fileName=ExcelUtil.path+fileName;
-        File file=new File(fileName);
+    public static void deleteFile(String originPath,String fileName){
+        File file=new File(originPath,fileName);
         file.delete();
     }
 
-    public static void createFile(StringBuilder tempFileName) {
+    /**
+     * 生成excel文件名称
+     * @param tempFileName
+     */
+    public static void generateExcelName(StringBuilder tempFileName) {
 
         tempFileName.append(UUID.randomUUID().
-                    toString().replaceAll("-",""));
+                toString().replaceAll("-",""));
         tempFileName.append(".xlsx");
+    }
+    public static String generateExcelName(){
+        String fileName = UUID.randomUUID().toString().replace("-","");
+        fileName+=".xlsx";
+        return fileName;
+    }
+
+    public static void closeSheet(XSSFSheet xssfSheet,String filePath) throws IOException {
+        XSSFWorkbook xssfWorkbook = xssfSheet.getWorkbook();
+        FileOutputStream fileOutputStream = new FileOutputStream(new File(filePath));
+        xssfWorkbook.write(fileOutputStream);
+        xssfWorkbook.close();
     }
 }

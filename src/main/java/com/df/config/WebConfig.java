@@ -29,6 +29,9 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addViewController("/success_register").setViewName("success_register");
 
+        registry.addViewController("/printdetail").setViewName("printdetail");
+
+        registry.addViewController("/printticket").setViewName("printticket");
     }
 
     @Override

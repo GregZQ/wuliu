@@ -60,6 +60,12 @@ var rightCon=new Vue({
         showSelected:function(){
 
         },
+        download:function(id){
+            var a = document.createElement('a');
+            var url = "/download?id="+id+"&type="+1;
+            a.href=url;
+            a.click()
+        },
         del:function (id) {
             if (confirm("您确认删除吗?")) {
                 $.ajax({

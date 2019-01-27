@@ -10,6 +10,8 @@ public class TicketProperties {
     public static final String pu[]={"零","壹","贰","叁","肆","伍","陆","柒","捌","玖"};
     public static final String jin[]={"","拾","佰","仟","万"};
 
+    static final Integer COMPANY=0;
+    static final Integer COMPANY_LINE=0;
 
     static final Integer TIME=1;
     static final Integer TIME_LINE=1;

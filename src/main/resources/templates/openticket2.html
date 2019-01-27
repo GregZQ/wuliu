@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>大发物流管理系统</title>
+	<title>物流管理系统</title>
 	<link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
 	<link rel="stylesheet" th:href="@{/css/css.css}" />
 	<script type="text/javascript" th:src="@{/js/jquery1.9.0.min.js}"></script>
@@ -54,13 +54,20 @@
 			<!--菜单栏-->
 		    <div id="my_menu" class="sdmenu">
 				<div >
-					<span>业务处理</span>
+					<span>货物管理</span>
 					<a  th:href="@{/openticket}">电脑开票</a>
-					<a  th:href="@{/detail}">入库明细</a>
-
-					<a th:href="@{/historydetail}">历史清单</a>
+					<a  th:href="@{/detail}">入库明细/管理</a>
+				</div>
+				<div>
+					<span>历史信息</span>
 					<a th:href="@{/historyticket}">历史开票</a>
-				</div>    
+					<a th:href="@{/historydetail}">历史运输清单</a>
+				</div>
+				<div>
+					<span>票据导出</span>
+					<a th:href="@{/printticket}">开票数据导出</a>
+					<a th:href="@{/printdetail}">运输清单导出</a>
+				</div>
 		    </div>
 	
 	     </div>
@@ -79,7 +86,7 @@
 		     <div class="right_cont">
 				<ul class="breadcrumb">当前位置：
 				  <a href="#">首页</a> <span class="divider">/</span>
-				  <a href="#">业务处理</a> <span class="divider">/</span>
+				  <a href="#">货物管理</a> <span class="divider">/</span>
 				  电脑开票
 				</ul>
 			   <div class="title_right">
@@ -91,7 +98,7 @@
 				       <table   class="table_print table table-bordered table_height" cellpadding="0" cellspacing="0">
 				       	     <tr>
 				       	     	<td colspan="13"  style="text-align: center;">
-				       	     		<h3>聊  城  市  大  发  物  流  有  限  公  司  专  用  票  据  </h3>
+									<h3><span th:text="${company}"></span>专用票据  </h3>
 				       	     		<div>
 				       	     			<div class="t_left">
 				       	     				托运日期：
