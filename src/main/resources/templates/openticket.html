@@ -68,6 +68,10 @@
 					<a th:href="@{/printticket}">开票数据导出</a>
 					<a th:href="@{/printdetail}">运输清单导出</a>
 				</div>
+				<div>
+					<span>个性化配置</span>
+					<a th:href="@{/personal}">个性化配置</a>
+				</div>
 		    </div>
 	
 	     </div>
@@ -91,10 +95,6 @@
 				</ul>
 			   <div class="title_right">
 			   		<strong>开票页</strong>
-			   	   	<span class="pull-right margin-bottom-5">
-				   		<a  class="btn btn-info btn-small" onclick="showUnit()"  href="#modal-unit" data-toggle="modal">
-				   			<i class="icon-plus icon-white"></i>选择单位</a>
-				   	</span>
 				   	<span class="pull-right margin-bottom-5">
 				   		<a  class="btn btn-info btn-small"  href="#modal-from" data-toggle="modal">
 				   			<i class="icon-plus icon-white"></i>选择发货地址</a>
@@ -102,10 +102,6 @@
 				   	<span class="pull-right margin-bottom-5">
 				   		<a  class="btn btn-info btn-small"  href="#modal-to" data-toggle="modal">
 				   			<i class="icon-plus icon-white"></i>选择收货地址</a>
-				   	</span>
-				   	<span class="pull-right margin-bottom-5">
-				   		<a  class="btn btn-info btn-small" href="#modal-good" data-toggle="modal" onclick="showGoods()">
-				   			<i class="icon-plus icon-white"></i>选择货物名称</a>
 				   	</span>
 			   </div>  
 			   <div style="width:900px; margin:auto">
@@ -273,7 +269,7 @@
 			 			</table>
 				   </form>
 			   </div>
-		     
+		     			<div id="modalForm">
 		     			    <div id="modal-from" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
 										<div class="modal-header">
 											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -283,19 +279,13 @@
 										</div>
 										<div>
 											<div class="mis_head">
-												山东省聊城市
+												请选择
 											</div>
 											
 											<div class="mis_con">
-												<label><input type="radio" onchange="addFromPlace(0)" name="check">聊城市</label>
-												<label><input type="radio" onchange="addFromPlace(1)" name="check">东昌府</label>
-	       										<label><input type="radio" onchange="addFromPlace(2)" name="check">临清</label>
-												<label><input type="radio" onchange="addFromPlace(3)" name="check">高唐</label>
-	       										<label><input type="radio" onchange="addFromPlace(4)" name="check">冠县</label>
-	       										<label><input type="radio" onchange="addFromPlace(5)" name="check">阳谷</label>
-	       										<label><input type="radio" onchange="addFromPlace(6)" name="check">荏平</label>
-	       										<label><input type="radio" onchange="addFromPlace(7)" name="check">莘县</label>
-	       										<label><input type="radio" onchange="addFromPlace(8)" name="check">东阿</label>
+												<label v-for="item in fromList">
+													<input type="radio" @change="addFromPlace(item.place)" name="check"><span v-text="item.place">聊城市</span>
+												</label>
 											</div>
 										
 										</div>
@@ -309,19 +299,19 @@
 										<div class="modal-header">
 											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 											<h3 id="myModalLabel">
-												发货地址
+												收货地址
 											</h3>
 										</div>
 										<div>
-											<div class="mis_head">									
-												<label><input type="radio" onclick="showToPlace2(0)" onchange="addToPlace(0,null,null,1)" name="to1">黑龙江省</label>
-												<label><input type="radio" onclick="showToPlace2(1)" onchange="addToPlace(1,null,null,1)" name="to1">吉林省</label>
-	       										<label><input type="radio" onclick="showToPlace2(2)" onchange="addToPlace(2,null,null,1)" name="to1">辽宁省</label>
+											<div class="mis_head">
+												请选择
 											</div>
-											<div class="mis_con" id="to2" style="display: none;">		
-											</div>	
-											<div class="mis_con" id="to3" style="display: none;">
-												
+
+											<div class="mis_con">
+												<label v-for="item in toList">
+													<input type="radio" @change="addToPlace(item.place)" name="check"/>
+													<span v-text="item.place">聊城市</span>
+												</label>
 											</div>
 										</div>
 										
@@ -329,48 +319,8 @@
 											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="sureToSave()" style="width:80px">保存</button> 
 						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
 										</div>
-							</div>	
-		     			    <div id="modal-good" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
-										<div class="modal-header">
-											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-											<h3 id="myModalLabel">
-												货物名称
-											</h3>
-										</div>
-										<div>
-											
-											<div class="mis_con" id="goodCon">		
-												
-											</div>	
-										
-										</div>
-										
-										<div class="modal-footer">
-											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="addGoods()" style="width:80px">保存</button> 
-						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
-										</div>
 							</div>
-							
-							<div id="modal-unit" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
-										<div class="modal-header">
-											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-											<h3 id="myModalLabel">
-												货物单位
-											</h3>
-										</div>
-										<div>
-											
-											<div class="mis_con" id="unitCon">		
-												
-											</div>	
-										
-										</div>
-										
-										<div class="modal-footer">
-											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="changeUnit()" style="width:80px">保存</button> 
-						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
-										</div>
-							</div>
+						</div>
 		     			    <!--<div id="modal-showType" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
 										<div class="modal-header">
 											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

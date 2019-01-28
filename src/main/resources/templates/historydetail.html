@@ -65,6 +65,10 @@
 					<a th:href="@{/printticket}">开票数据导出</a>
 					<a th:href="@{/printdetail}">运输清单导出</a>
 				</div>
+				<div>
+					<span>个性化配置</span>
+					<a th:href="@{/personal}">个性化配置</a>
+				</div>
 		    </div>
 
      </div>
@@ -106,6 +110,7 @@
 		   <tr align="center">
 			 <td nowrap="nowrap"><strong>序号</strong></td>
 			 <td nowrap="nowrap"><strong>发货地点</strong></td>
+			 <td nowrap="nowrap"><strong>收货地点</strong></td>
 			 <td nowrap="nowrap"><strong>承运车号</strong></td>
 			 <td nowrap="nowrap"><strong>装车日期</strong></td>
 			 <td width="80" nowrap="nowrap"><strong> 操作 </strong></td>
@@ -113,7 +118,8 @@
 				<!---->
 			   <tr align="center" v-for="(item,index) in datas">
 					 <td nowrap="nowrap" v-text="index+1">1</td>
-					 <td nowrap="nowrap" v-text="item.place">聊城-哈尔滨</td>
+					 <td nowrap="nowrap" v-text="item.fromLine">聊城-哈尔滨</td>
+				   	 <td nowrap="nowrap" v-text="item.toLine"></td>
 					 <td nowrap="nowrap" v-text="item.carid">鲁J12528</td>
 					 <td nowrap="nowrap" v-text="item.loadTimeValue">2015-12-12</td>
 					 <td nowrap="nowrap">

@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>大发物流管理系统</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
+	<link rel="stylesheet" th:href="@{/css/css.css}" />
+	<script type="text/javascript" th:src="@{/js/jquery1.9.0.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/sdmenu.js}"></script>
+	<script type="text/javascript" th:src="@{/js/laydate/laydate.js}"></script>
+</head>
+
+<body>
+<div class="header">
+	 <div class="logo"><img  th:src="@{/img/logo.png}" /></div>
+     
+				<div class="header-right">
+					<i class="icon-off icon-white"></i> <a id="modal-973558" href="#modal-container-973558" role="button" data-toggle="modal">注销</a>
+					<div id="modal-container-973558" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:300px; margin-left:-150px; top:30%">
+				<div class="modal-header">
+					 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h3 id="myModalLabel">
+						注销系统
+					</h3>
+				</div>
+				<div class="modal-body">
+					<p>
+						您确定要注销退出系统吗？
+					</p>
+				</div>
+				<div class="modal-footer">
+					 <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <a class="btn btn-primary" style="line-height:20px;" href="tologout}" >确定退出</a>
+				</div>
+			</div>
+				</div>
+</div>
+<!-- 顶部 -->     
+            
+<div id="middle">
+     <div class="left">
+     
+	     <script type="text/javascript">
+		var myMenu;
+		window.onload = function() {
+			myMenu = new SDMenu("my_menu");
+			myMenu.init();
+		};
+		</script>
+
+			<div id="my_menu" class="sdmenu">
+				<div >
+					<span>货物管理</span>
+					<a th:href="@{/openticket}">电脑开票</a>
+					<a  th:href="@{/detail}">入库明细/管理</a>
+				</div>
+				<div>
+					<span>历史信息</span>
+					<a th:href="@{/historyticket}">历史开票</a>
+					<a th:href="@{/historydetail}">历史运输清单</a>
+				</div>
+				<div>
+					<span>票据导出</span>
+					<a th:href="@{/printticket}">开票数据导出</a>
+					<a th:href="@{/printdetail}">运输清单导出</a>
+				</div>
+				<div>
+					<span>个性化配置</span>
+					<a th:href="@{/personal}">个性化配置</a>
+				</div>
+		    </div>
+
+     </div>
+     	<div class="Switch"></div>
+		     <script type="text/javascript">
+				$(document).ready(function(e) {
+			    $(".Switch").click(function(){
+				$(".left").toggle();
+				 
+					});
+			    });
+			</script>
+
+	     <div class="right"  id="mainFrame">
+			 <div class="right_cont">
+						<ul class="breadcrumb">当前位置：
+						  <a href="#">首页</a> <span class="divider">/</span>
+						  <a href="#">个性化配置</a> <span class="divider">/</span>
+								个性化配置
+						</ul>
+						
+						<div class="title_right">
+			   				<strong>公司名称</strong>
+						</div>
+						<span class="pull-right margin-bottom-5">
+					   		<a  class="btn btn-info btn-small"  href="#company-form" data-toggle="modal">
+					   			更改公司名称
+					   		</a>
+					   	</span>
+			 </div>
+			 <form id="companyForm"  th:action="@{/personal/rename}" method="post">
+			 	<input type="hidden"  name="company" id="company"/>
+				 <table class="table table-bordered table-striped table-hover">
+					 <tbody>
+					   <tr align="center">
+						 <td nowrap="nowrap"><strong>公司名称</strong></td>	 
+					   </tr>
+							<!---->
+						   <tr align="center">
+						   		
+								 <td nowrap="nowrap" v-text="company">1</td>
+						   </tr>
+					  </tbody>
+				    </table>
+			 </form>
+	   		 <div class="right_cont">
+				<div class="title_right">
+	   				<strong>开票发货/收货地址</strong>
+				</div>
+				<span class="pull-right margin-bottom-5">
+					   		<a  class="btn btn-info btn-small"  href="#place-form" data-toggle="modal">
+					   			<i class="icon-plus icon-white"></i>添加地址
+					   		</a>
+				</span>
+	   		 </div>
+	   		 <form id="placeForm" th:action="@{/personal/place}" method="post">
+	   		 	     <input type="hidden" name="place" id="place" />
+			   		 <table class="table table-bordered table-striped table-hover">
+							 <tbody>
+							    <tr align="center">
+								 <td nowrap="nowrap"><strong>地址</strong></td>
+								 <td width="80" nowrap="nowrap"><strong> 操作 </strong></td>
+								</tr>
+								<tr align="center" v-for="item in placeList">
+									<td nowrap="nowrap" v-text="item.place">聊城-哈尔滨</td>
+									<td nowrap="nowrap">
+										<a href="javascript:void(0)"  @click="deletePlace(item.id)">删除</a>
+									</td>
+								</tr>
+							 </tbody>
+					 </table>
+			 </form>
+	   		 <div class="right_cont">
+				<div class="title_right">
+	   				<strong>运输发货/收货地址</strong>
+				</div>
+				<span class="pull-right margin-bottom-5">
+					   		<a  class="btn btn-info btn-small"  href="#loadPlace-form" data-toggle="modal">
+					   		<i class="icon-plus icon-white"></i>添加地址</a>
+				</span>
+	   		 </div>
+	   		 <form id="loadPlaceForm" th:action="@{/personal/loadplace}" method="post">
+	   		 	    <input type="hidden" name="loadPlace" id="loadPlace" />
+			   		<table class="table table-bordered table-striped table-hover">
+							 <tbody>
+							    <tr align="center">
+								 <td nowrap="nowrap"><strong>地址</strong></td>
+								 <td width="80" nowrap="nowrap"><strong> 操作 </strong></td>
+								</tr>
+
+								<tr align="center" v-for="item in loadPlaceList">
+									<td nowrap="nowrap" v-text="item.loadPlace">聊城-哈尔滨</td>
+									<td nowrap="nowrap">
+										<a href="javascript:void(0)"  @click="deleteLoadPlace(item.id)">删除</a>
+									</td>
+								</tr>
+							 </tbody>
+					 </table>
+			</form>		 
+	     </div>     
+ 
+		     			    <div id="company-form" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+										<div class="modal-header">
+											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												更改公司名称
+											</h3>
+										</div>
+										<div>
+											
+											<div class="mis_con">
+												<strong>
+													请输入新名称：
+													<input type="text"  id="company1"/>
+												</strong>
+												<br />
+											</div>
+										
+										</div>
+										
+										<div class="modal-footer">
+											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="submitCompany()" style="width:80px">保存</button> 
+						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
+										</div>
+							</div>	
+							<div id="place-form" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+										<div class="modal-header">
+											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												添加开票发/收货地址
+											</h3>
+										</div>
+										<div>
+											
+											<div class="mis_con">
+												<strong>
+													请输入新地址：
+													<input type="text" id="place2" />
+												</strong>
+												<br />
+											</div>
+										
+										</div>
+										
+										<div class="modal-footer">
+											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="submitPlace()" style="width:80px">保存</button> 
+						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
+										</div>
+							</div>	
+							<div id="loadPlace-form" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+										<div class="modal-header">
+											 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+											<h3 id="myModalLabel">
+												添加运输发/收货地址
+											</h3>
+										</div>
+										<div>
+											
+											<div class="mis_con">
+												<strong>
+													请输入新地址：
+													<input type="text" id="loadPlace2" />
+												</strong>
+												<br />
+											</div>
+										
+										</div>
+										
+										<div class="modal-footer">
+											 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="submitLoadPlace()" style="width:80px">保存</button> 
+						                     <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
+										</div>
+							</div>	
+</div>
+    
+<!-- 底部 -->
+<div id="footer">版权所有：大发客流 &copy; 2015&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.mycodes.net/" target="_blank">源码之家</a></div>
+
+
+<script src="js/personal.js"></script>
+
+ 
+</body>
+</html>

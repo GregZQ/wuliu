@@ -19,7 +19,9 @@ public class Sends {
 
     private Date loadTime;
 
-    private String place;
+    private String fromLine;
+
+    private String toLine;
 
     private String sendTimeValue;
 
@@ -117,11 +119,19 @@ public class Sends {
         }
     }
 
-    public String getPlace() {
-        return place;
+    public String getFromLine() {
+        return fromLine;
     }
 
-    public void setPlace(String place) {
-        this.place = place;
+    public String getToLine() {
+        return toLine;
+    }
+
+    public void setFromLine(String fromLine) {
+        this.fromLine = fromLine;
+    }
+
+    public void setToLine(String toLine) {
+        this.toLine = toLine;
     }
 }

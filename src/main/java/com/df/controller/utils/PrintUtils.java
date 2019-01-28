@@ -20,6 +20,33 @@ import java.util.List;
  */
 public class PrintUtils {
     /**
+     * 更新票据文件
+     * @param filePath
+     * @param sheetName
+     * @param user
+     * @throws Exception
+     */
+    public static void updateTicketFile(String filePath,String sheetName,User user) throws Exception {
+        XSSFSheet xssfSheet = ExcelUtil.opneFileBySheet(filePath,sheetName);
+        ExcelUtil.writeToExcel(xssfSheet,TicketProperties.COMPANY_LINE,TicketProperties.COMPANY,
+                user.getCompany()+"专用票据");
+        ExcelUtil.closeSheet(xssfSheet,filePath);
+    }
+
+    /**
+     * 更新运输货物文件
+     * @param filePath
+     * @param sheetName
+     * @param user
+     * @throws Exception
+     */
+    public static void updateFubenFile(String filePath,String sheetName,User user) throws Exception {
+        XSSFSheet xssfSheet = ExcelUtil.opneFileBySheet(filePath,sheetName);
+        ExcelUtil.writeToExcel(xssfSheet,DetailListProperties.COMPANY_LINE,DetailListProperties.COMPANY,
+                user.getCompany()+"专用票据");
+        ExcelUtil.closeSheet(xssfSheet,filePath);
+    }
+    /**
      * 生成专用票据
      * @param srcFilePath 源文件路径
      * @param filePath
@@ -126,7 +153,7 @@ public class PrintUtils {
 
         ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.COMPANY_LINE,DetailListProperties.COMPANY, user.getCompany()+"运输清单");
         ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.CARID_LINE, DetailListProperties.CARID, sends.getCarid());
-        ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.BIG_PLACE_LINE, DetailListProperties.BIG_PLACE, "聊城---" + sends.getPlace() + "货物运输清单");
+        ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.BIG_PLACE_LINE, DetailListProperties.BIG_PLACE, sends.getFromLine()+"---" + sends.getToLine() + "货物运输清单");
         ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.LOAD_TIME_LINE, DetailListProperties.LOAD_TIME, sends.getLoadTimeValue());
         ExcelUtil.writeToExcel(xssfSheet, DetailListProperties.PAGELINE, DetailListProperties.PAGE, "第1页");
 

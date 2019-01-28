@@ -1,3 +1,49 @@
+var myVue = new Vue({
+	el:"#modalForm",
+	data:{
+		fromList:[],
+		toList:[],
+		fromPlace:"",
+		toPlace:""
+	},
+	mounted:function () {
+		this.showList()
+    },
+	methods:{
+		showList:function(){
+			$.ajax({
+				type:"GET",
+				url:"/personal/place",
+				success:function(data){
+					myVue.fromList=[];
+					for (var i=0;i<data.length;i++){
+						myVue.fromList.push(data[i]);
+                        myVue.toList.push(data[i]);
+					}
+				}
+			});
+		},
+        addFromPlace:function(val){
+			alert(val);
+    		fromPlace=val
+		},
+        sureFromSave:function(){
+			if (!(fromPlace=="")){
+				$("#from_val").val(fromPlace);
+			}
+		},
+		addToPlace:function (val) {
+			toPlace=val;
+        },
+		sureToSave:function () {
+            if (!(toPlace=="")){
+                $("#to_val").val(toPlace);
+            }
+        }
+	}
+
+});
+
 var datas=["零","壹","贰","叁","肆","伍","陆","柒","捌","玖"];
 var dw=["","拾","佰","仟","万"];
 $('#money_input').bind('input propertychange',function(){
@@ -46,8 +92,8 @@ $('#money_input').bind('input propertychange',function(){
 var from_places=["聊城","东昌府","临清","高唐","冠","阳谷","荏平","莘","东阿"];
 
 var fromPlace;
-function addFromPlace(num){
-	fromPlace=from_places[num]
+function addFromPlace(val){
+	fromPlace=val
 }
 function sureFromSave(){
 	if (!(fromPlace=="")){
@@ -154,58 +200,6 @@ function sureToSave(){
 	if (!(fromPlace=="")){
 		$("#to_val").val(toPlace);
 	}
-}
-
-/**
- * 以下内容与货物相关
- */
-var goods=[
-	"箱","木箱","纸箱","铁箱","工具","包装盒","食品","花生","干菜","酱菜","酒","酒盒",
-	"调料","饮料","面粉","农产品","设备","电机","发动机","发电机","起动机","柴油机","风机",
-	"面条机","机器","机床","轿车","摩托车","三轮车","自行车","铁件","配件","刹车片","铁板",
-	"钢管","钢材","型材","石材","板材","木材","建材","电器","药材","化肥","化工","斗轴","螺丝",
-	"轮胎","钢丝绳","油泵油嘴","汽车配件","炉排","振动棒","水泥管","手拉葫芦","铝单板","铝型材",
-	"仪表","合成块","内胎","盘管","垫胎","座垫","电池","服装","舞台","农资","文具","糊精","淀粉",
-	"淀粉钠","二硅","硬镁","膨速王","纤维素","蛋白","玻璃制品","辅料","饲料","纸","鱼缸","塑料布",
-	"颗粒","海棉","塑料管","医用品","医药品","阿胶","粘鼠板","装饰板","湿巾","网布","灯具","橡皮泥",
-	"编织袋","包装袋","盘管","相框","家具","工艺品","蚊香","棉包"
-];
-var goods_val;
-function showGoods(){
-	$("#goodCon").empty();
-	var length=goods.length;
-	for (i=0;i<length;i++){
-		$("#goodCon").append(
-			'<label><input type="radio" name="good" onchange="chooseGoods('+i+')">'+goods[i]+ '</label>'
-		);
-	}
-}
-function chooseGoods(id){
-	goods_val=goods[id];
-}
-
-function addGoods(){
-	$("#good_val").val(goods_val);
-}
-
-var unit=["件","袋","桶","箱","托","包"];
-
-
-var unitVal;
-function showUnit(){
-	$("#unitCon").empty();
-	var length=unit.length;
-	for (i=0;i<length;i++){
-		$("#unitCon").append(
-			'<label><input type="radio" name="unit" onchange="chooseUnit('+i+')">'+unit[i]+ '</label>'
-		);
-	}
-}
-function chooseUnit(id){
-	unitVal=unit[id];
-}
-function changeUnit(){
-	$("#unit_val").html(unitVal);
 }
 
 /*

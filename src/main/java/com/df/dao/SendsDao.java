@@ -20,7 +20,8 @@ public interface SendsDao {
     @Delete("delete from t_sends  where load_time is null")
     void refresh();
 
-    @Select("select sid,carid,load_time as loadTime,place as place," +
+    @Select("select sid,carid, " +
+            " load_time as loadTime,from_line as fromLine,to_line as toLine, " +
             " send_time as sendTime , " +
             " save_path as savePath,uid as uid " +
             "from t_sends where sid=#{id}")
@@ -28,13 +29,14 @@ public interface SendsDao {
 
     @Update("update t_sends " +
             " set carid=#{carid},load_time=#{loadTime}," +
-            " place=#{place}," +
+            " from_line=#{fromLine}," +
+            " to_line=#{toLine},"+
             " save_path=#{savePath},uid=#{uid} "+
             " where sid=#{sid}")
     void updateSendList(Sends sends);
 
     @Select("<script> " +
-            " select sid,place as Place," +
+            " select sid,from_line as fromLine,to_line as toLine," +
             " carid,load_time as loadTime " +
             " from t_sends " +
             " where uid=#{uid} " +

@@ -66,6 +66,10 @@
 				<a th:href="@{/printticket}">开票数据导出</a>
 				<a th:href="@{/printdetail}">运输清单导出</a>
 			</div>
+			<div>
+				<span>个性化配置</span>
+				<a th:href="@{/personal}">个性化配置</a>
+			</div>
 	     </div>
 
      </div>
@@ -90,8 +94,12 @@
       
    <div class="title_right" id="rightCon">
 			<span class="pull-right margin-bottom-5">
-				<a  class="btn btn-info btn-small"  id="modal1" href="#modal-line" role="button" data-toggle="modal">
-					<i class="icon-plus icon-white"></i> 选择线路</a>
+				<a  class="btn btn-info btn-small"  id="modal1" href="#from-line" role="button" data-toggle="modal">
+					<i class="icon-plus icon-white"></i> 选择发货线路</a>
+			</span>
+	        <span class="pull-right margin-bottom-5">
+				<a  class="btn btn-info btn-small"  id="modal2" href="#to-line" role="button" data-toggle="modal">
+					<i class="icon-plus icon-white"></i> 选择收货线路</a>
 			</span>
    	<strong>运输清单</strong>
    </div>
@@ -99,24 +107,45 @@
     
  
 <!--   <!--后期添加模态框弹出选择-->
-		 <div id="modal-line" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
-			 <div class="modal-header">
-				 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				 <h3 id="myModalLabel">
-					 线路管理
-				 </h3>
-			 </div>
-			 <div>
-				 <td>
-					 <label><input type="radio" onchange="changePlace('沈阳')" name="check">沈阳</label>
-					 <label><input type="radio" onchange="changePlace('哈尔滨')" name="check">哈尔滨</label>
-					 <label><input type="radio" onchange="changePlace('长春')" name="check">长春</label>
-				 </td>
-			 </div>
-			 <div class="modal-footer">
-				 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">保存</button>
-				 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button>
-			 </div>
+		 <div id="line">
+				 <div id="from-line" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+					 <div class="modal-header">
+						 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						 <h3 id="myModalLabel">
+							 发货线路管理
+						 </h3>
+					 </div>
+					 <div>
+						 <td>
+							 <label v-for="item in fromLine">
+								 <input type="radio" @change="changeFromLine(item.loadPlace)" name="check"><span v-text="item.loadPlace"></span>
+							 </label>
+						 </td>
+					 </div>
+					 <div class="modal-footer">
+						 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">保存</button>
+						 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button>
+					 </div>
+				 </div>
+				 <div id="to-line" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
+					 <div class="modal-header">
+						 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						 <h3 id="myModalLabel">
+							 收货线路管理
+						 </h3>
+					 </div>
+					 <div>
+						 <td>
+							 <label v-for="item in toLine">
+								 <input type="radio" @change="changeToLine(item.loadPlace)" name="check"><span v-text="item.loadPlace"></span>
+							 </label>
+						 </td>
+					 </div>
+					 <div class="modal-footer">
+						 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">保存</button>
+						 <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button>
+					 </div>
+				 </div>
 		 </div>
   <form id="myForm" th:action="@{/senddetails/finish}" method="post">
 	   <table class="table table-bordered table-striped table-hover">
@@ -126,7 +155,7 @@
 					<h3><span th:text="${company}"></span>出货票据
 					</h3>
 					<h5>
-						聊城----<span id="to" th:text="${sends.place}"></span>货物运输清单
+						<span id="from" th:text="${sends.fromLine}">聊城</span>----<span id="to" th:text="${sends.toLine}"></span>货物运输清单
 					</h5>
 					<div class="t_left">
 						承运车号：<input type="text" class="span1-1" id="carid" name="carid" th:value="${sends.carid}"/>
@@ -205,7 +234,8 @@
 				 <td nowrap="nowrap"></td>
 			 </tr>
 			<input type="hidden" name="sid" th:value="${sends.sid}"/>
-			<input type="hidden" name="place" th:value="${sends.place}"/>
+			<input type="hidden" name="fromLine" th:value="${sends.fromLine}"/>
+		 	<input type="hidden" name="toLine" th:value="${sends.toLine}"/>
 		 </tbody>
 	   </table>
 	   <table  class="margin-bottom-20 table  no-border" >
@@ -237,49 +267,7 @@ laydate({elem: '#Calendar2'});
  
 </script>
 
-<script>
-    function changePlace(temp){
-        $("#to").html(temp);
-        $("input[name='place']").val(temp);
-    }
-
-    function download(id){
-        var a = document.createElement('a');
-        var url = "/download?id="+id+"&type="+2;
-        a.href=url;
-        a.click()
-	}
-
-    function  checkMsg() {
-		var carid=$("#carid").val();
-
-		var place=$("#to").html();
-
-		var calendar=$("#Calendar").val();
-
-		if (testNull(carid)){
-		    alert("承运车号不能为空");
-			return;
-		}
-		if (testNull(place)){
-		    alert("标题目的地不能为空");
-			return ;
-		}
-		if (testNull(calendar)){
-		    alert("装车日期不能为空");
-			return ;
-		}
-
-		$("#myForm").submit();
-    }
-    function testNull(a){
-        if (a == "" || a == null || a == undefined){
-            return true;
-		}
-        return false;
-	}
-</script>
-
+<script type="text/javascript" th:src="@{/js/sendlist.js}"></script>
  
 </body>
 </html>

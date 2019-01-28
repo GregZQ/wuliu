@@ -23,4 +23,7 @@ public interface UserDao {
     @Update("update t_user set ticket=#{ticket},fuben=#{fuben},end=#{end} " +
             "where id=#{id}")
     void updatePath(User user);
+
+    @Update("update t_user set company=#{company} where id=#{id}")
+    void updateCompany(User user);
 }

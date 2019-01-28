@@ -29,4 +29,8 @@ public class UserService {
     public void updatePath(User user) {
         this.userDao.updatePath(user);
     }
+
+    public void renameCompany(User user) {
+        this.userDao.updateCompany(user);
+    }
 }
