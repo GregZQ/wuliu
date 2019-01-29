@@ -253,14 +253,6 @@
 				       		 </tr>
 
 				       </table>
-				      	<div>
-		       	     			<div class="end_left">
-		       	     				查询电话：13376358637
-		       	     			</div>
-		       	     			<div class="end_right">
-		       	     				制单人：
-		       	     			</div>
-				       	</div>
 			   <!--endprint1-->
 			       <table  class="margin-bottom-20 table  no-border" >
 					        <tr>
@@ -284,7 +276,7 @@
 											
 											<div class="mis_con">
 												<label v-for="item in fromList">
-													<input type="radio" @change="addFromPlace(item.place)" name="check"><span v-text="item.place">聊城市</span>
+													<input type="radio" @change="addFromPlace(item.place)" name="check"><span v-text="item.place"></span>
 												</label>
 											</div>
 										
@@ -310,7 +302,7 @@
 											<div class="mis_con">
 												<label v-for="item in toList">
 													<input type="radio" @change="addToPlace(item.place)" name="check"/>
-													<span v-text="item.place">聊城市</span>
+													<span v-text="item.place"></span>
 												</label>
 											</div>
 										</div>
@@ -397,7 +389,7 @@
 	 
 	</script>
 	
-	<script src="js/content.js"></script>
+	<script th:src="@{js/content.js}"></script>
 
  
 </body>

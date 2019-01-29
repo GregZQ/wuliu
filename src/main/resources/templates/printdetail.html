@@ -102,11 +102,11 @@
             </tr>
             <!---->
             <tr align="center" v-for="(item,index) in datas">
-                <td nowrap="nowrap" v-text="index+1">1</td>
-                <td nowrap="nowrap" v-text="item.fromLine">聊城-哈尔滨</td>
-                <td nowrap="nowrap" v-text="item.toLine">聊城-哈尔滨</td>
-                <td nowrap="nowrap" v-text="item.carid">鲁J12528</td>
-                <td nowrap="nowrap" v-text="item.loadTimeValue">2015-12-12</td>
+                <td nowrap="nowrap" v-text="index+1"></td>
+                <td nowrap="nowrap" v-text="item.fromLine"></td>
+                <td nowrap="nowrap" v-text="item.toLine"></td>
+                <td nowrap="nowrap" v-text="item.carid"></td>
+                <td nowrap="nowrap" v-text="item.loadTimeValue"></td>
                 <td nowrap="nowrap">
                     <a href="javascript:void(0)"  @click="download(item.sid)">导出</a>
                 </td>
@@ -137,7 +137,9 @@
 </div>
 
 <!-- 底部 -->
-<div id="footer">版权所有：大发客流 &copy; 2015&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.mycodes.net/" target="_blank">源码之家</a></div>
+<div id="footer">
+
+</div>
 
 <script type="text/javascript" th:src="@{/js/printdetail.js}"></script>
 <script>

@@ -133,7 +133,7 @@
 								 <td width="80" nowrap="nowrap"><strong> 操作 </strong></td>
 								</tr>
 								<tr align="center" v-for="item in placeList">
-									<td nowrap="nowrap" v-text="item.place">聊城-哈尔滨</td>
+									<td nowrap="nowrap" v-text="item.place"></td>
 									<td nowrap="nowrap">
 										<a href="javascript:void(0)"  @click="deletePlace(item.id)">删除</a>
 									</td>
@@ -160,7 +160,7 @@
 								</tr>
 
 								<tr align="center" v-for="item in loadPlaceList">
-									<td nowrap="nowrap" v-text="item.loadPlace">聊城-哈尔滨</td>
+									<td nowrap="nowrap" v-text="item.loadPlace"></td>
 									<td nowrap="nowrap">
 										<a href="javascript:void(0)"  @click="deleteLoadPlace(item.id)">删除</a>
 									</td>
@@ -245,7 +245,9 @@
 </div>
     
 <!-- 底部 -->
-<div id="footer">版权所有：大发客流 &copy; 2015&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.mycodes.net/" target="_blank">源码之家</a></div>
+<div id="footer">
+
+</div>
 
 
 <script src="js/personal.js"></script>
